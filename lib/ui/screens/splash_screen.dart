@@ -59,6 +59,8 @@ class _SplashScreenState extends State<SplashScreen>
     /// Navigate based on token existence
 
     Future.delayed(const Duration(seconds: 3), () async {
+      // await SharePreference.instance.remove(Env.accessToken);
+
       if (!mounted) return;
       final token = await SharePreference.instance.getString(Env.accessToken);
       if (!mounted) {

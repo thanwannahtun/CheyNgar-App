@@ -227,10 +227,17 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
 
   Widget _infoRow({required String label, required String value}) {
     return Row(
+      spacing: 5,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        Text(value, style: Theme.of(context).textTheme.bodyMedium),
+        Expanded(
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.end,
+          ),
+        ),
       ],
     );
   }

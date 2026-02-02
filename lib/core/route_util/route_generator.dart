@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../app.dart';
-import '../../ui/screens/auth/login_screen.dart';
 import '../../ui/screens/pin_auth_screen.dart';
 import '../../ui/screens/splash_screen.dart';
 import 'route_names.dart';

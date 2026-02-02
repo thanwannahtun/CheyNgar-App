@@ -13,7 +13,7 @@ class AuthRepo extends ApiService {
     try {
       final response = await postRequest('/users/register', {
         'pinCode': pinCode,
-        'phoneNumber': phoneNumber,
+        'phoneNumber': phoneNumber.trim(),
       });
       if (response.statusCode == 201) {
         return User.fromJson(response.data["data"]);

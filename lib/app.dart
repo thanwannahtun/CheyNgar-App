@@ -15,7 +15,6 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: false,
       child: Scaffold(
         appBar: AppBar(title: const Text('အချေးအငှား'), centerTitle: true),
         body: Stack(
