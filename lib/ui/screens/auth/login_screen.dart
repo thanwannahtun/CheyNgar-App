@@ -47,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
             (route) => false,
           );
         }
+        if (state.registerStatus == BlocStatus.success) {}
         if (state.status == BlocStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message ?? "Something went wrong!")),

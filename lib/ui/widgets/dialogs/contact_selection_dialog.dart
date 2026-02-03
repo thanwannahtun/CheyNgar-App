@@ -49,7 +49,7 @@ class _ContactSelectionDialogState extends State<ContactSelectionDialog> {
           ),
           TextField(
             decoration: const InputDecoration(
-              labelText: 'Search by Name..',
+              labelText: 'Name..',
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(),
             ),
@@ -78,7 +78,7 @@ class _ContactSelectionDialogState extends State<ContactSelectionDialog> {
                 }).toList();
 
                 if (filteredTrips.isEmpty) {
-                  return const Center(child: Text("No trips found."));
+                  return const Center(child: Text("No Contacts."));
                 }
 
                 return ListView.separated(

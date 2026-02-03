@@ -53,34 +53,43 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
-        if (state.status == BlocStatus.success) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            RouteNames.app,
-            (_) => false,
-          );
-        }
-        if (state.registerStatus == BlocStatus.success) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            RouteNames.app,
-            (_) => false,
-          );
-        }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthCubit, AuthState>(
+          listenWhen: (p, c) => p.status != c.status,
+          listener: (context, state) {
+            if (state.status == BlocStatus.success) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                RouteNames.app,
+                (_) => false,
+              );
+            }
+            if (state.status == BlocStatus.failure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message ?? "Login failed")),
+              );
+            }
+          },
+        ),
 
-        if (state.status == BlocStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message ?? "Login failed")),
-          );
-        }
-        if (state.registerStatus == BlocStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message ?? "Registration failed")),
-          );
-        }
-      },
+        BlocListener<AuthCubit, AuthState>(
+          listenWhen: (p, c) => p.registerStatus != c.registerStatus,
+          listener: (context, state) {
+            if (state.registerStatus == BlocStatus.success) {
+              setState(() => isRegistration = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Register success\nLogin again!")),
+              );
+            }
+            if (state.registerStatus == BlocStatus.failure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message ?? "Registration failed")),
+              );
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         body: SafeArea(
           child: Form(
@@ -153,13 +162,36 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
                         const SizedBox(height: 32),
 
                         /// Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _submit,
-                            child: Text(isRegistration ? "Register" : "Login"),
-                          ),
+                        BlocBuilder<AuthCubit, AuthState>(
+                          builder: (context, state) {
+                            final bool isLoading =
+                                state.status == BlocStatus.loading ||
+                                state.registerStatus == BlocStatus.loading;
+
+                            return SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: isLoading ? null : _submit,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (isLoading) ...[
+                                      SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                    ],
+                                    Text(isRegistration ? "Register" : "Login"),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
 
                         const SizedBox(height: 20),

@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'အချေးအငှား',
           navigatorKey: navigatorKey,
-          themeMode: ThemeMode.dark,
+          themeMode: ThemeMode.system,
           theme: buildLightTheme(),
           darkTheme: buildDarkTheme(),
           onGenerateRoute: RouteGenerator.onGenerateRoute,

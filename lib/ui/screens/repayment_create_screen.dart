@@ -67,111 +67,106 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: 24,
             ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minWidth: MediaQuery.of(context).size.width * 0.6,
-                        maxHeight: MediaQuery.of(context).size.height * 0.8,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            spacing: 16,
-                            children: [
-                              // amount number only
-                              TextFormField(
-                                controller: _amountController,
-                                enabled: !isLoading,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: "ပြန်ဆပ်ငွေပမာဏ",
-                                ),
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return "ပြန်ဆပ်ငွေပမာဏ ထည့်ပါ";
-                                  }
-                                  if (double.tryParse(val.trim()) == null) {
-                                    return "ပြန်ဆပ်ငွေပမာဏ မှန်ကန်မှုမရှိပါ";
-                                  }
-                                  return null;
-                                },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          spacing: 16,
+                          children: [
+                            // amount number only
+                            TextFormField(
+                              controller: _amountController,
+                              enabled: !isLoading,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: "ပြန်ဆပ်ငွေပမာဏ",
                               ),
-                              // date only picker
-                              DatePickerFormField(
-                                label: "ပြန်ဆပ်သည့်ရက်စွဲ",
-                                value: _selectedDate,
-                                onChanged: (date) {
-                                  if (date != null) {
-                                    setState(() {
-                                      _selectedDate = date;
-                                    });
-                                  }
-                                },
-                              ),
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return "ပြန်ဆပ်ငွေပမာဏ ထည့်ပါ";
+                                }
+                                if (double.tryParse(val.trim()) == null) {
+                                  return "ပြန်ဆပ်ငွေပမာဏ မှန်ကန်မှုမရှိပါ";
+                                }
+                                return null;
+                              },
+                            ),
+                            // date only picker
+                            DatePickerFormField(
+                              label: "ပြန်ဆပ်သည့်ရက်စွဲ",
+                              value: _selectedDate,
+                              onChanged: (date) {
+                                if (date != null) {
+                                  setState(() {
+                                    _selectedDate = date;
+                                  });
+                                }
+                              },
+                            ),
 
-                              TextFormField(
-                                controller: _remarkController,
-                                enabled: !isLoading,
-                                maxLines: null,
-                                decoration: const InputDecoration(
-                                  labelText: "မှတ်ချက်",
-                                ),
+                            TextFormField(
+                              controller: _remarkController,
+                              enabled: !isLoading,
+                              maxLines: null,
+                              decoration: const InputDecoration(
+                                labelText: "မှတ်ချက်",
                               ),
-                              Spacer(),
+                            ),
+                            SizedBox(height: 16),
 
-                              /// note text or info text message that
-                              /// if the amount is more than the due amount,
-                              /// it will be adjusted to the due amount
-                              /// or else the amount will be deducted from the interest first
-                              /// then the principal
-                              /// this is just an info message
-                              Text(
-                                "မှတ်ချက်: ပြန်ဆပ်ငွေပမာဏသည် အတိုးနှုန်းမှ ဦးစွာနှုပ်မည်ဖြစ်သည်။ ပိုမိုသောငွေပမာဏကို အရင်းမှ ထပ်နှုပ်မည်ဖြစ်သည်။",
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: Colors.grey),
-                              ),
-                            ],
-                          ),
+                            /// note text or info text message that
+                            /// if the amount is more than the due amount,
+                            /// it will be adjusted to the due amount
+                            /// or else the amount will be deducted from the interest first
+                            /// then the principal
+                            /// this is just an info message
+                            Text(
+                              "မှတ်ချက်: ပြန်ဆပ်ငွေပမာဏသည် အတိုးနှုန်းမှ ဦးစွာနှုပ်မည်ဖြစ်သည်။ ပိုမိုသောငွေပမာဏကို အရင်းမှ ထပ်နှုပ်မည်ဖြစ်သည်။",
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                ListTile(
-                  title: ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              context
-                                  .read<TransactionDetailCubit>()
-                                  .createRepayment(
-                                    Repayment(
-                                      transactionId: state.transaction?.id ?? 0,
-                                      amountPaid: double.parse(
-                                        _amountController.text.trim(),
+                  ListTile(
+                    title: ElevatedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                context
+                                    .read<TransactionDetailCubit>()
+                                    .createRepayment(
+                                      Repayment(
+                                        transactionId:
+                                            state.transaction?.id ?? 0,
+                                        amountPaid: double.parse(
+                                          _amountController.text.trim(),
+                                        ),
+                                        paymentDate: _selectedDate,
+                                        note: _remarkController.text.trim(),
                                       ),
-                                      paymentDate: _selectedDate,
-                                      note: _remarkController.text.trim(),
-                                    ),
-                                  );
-                            }
-                          },
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text("Save"),
+                                    );
+                              }
+                            },
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text("Save"),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

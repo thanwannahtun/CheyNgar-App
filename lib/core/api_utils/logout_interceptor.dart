@@ -1,6 +1,6 @@
+import 'package:chey_ngar/ui/screens/pin_auth_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../../ui/screens/auth/login_screen.dart';
 
 import '../../data/share_preference.dart';
 import '../../main.dart';
@@ -22,7 +22,7 @@ class LogoutInterceptor extends Interceptor {
 
 _logoutUserAndDeleteCredential() async {
   navigatorKey.currentState?.pushAndRemoveUntil(
-    MaterialPageRoute(builder: (context) => LoginScreen()),
+    MaterialPageRoute(builder: (context) => PinAuthScreen()),
     (route) => false,
   );
   await SharePreference.instance.clearAll();

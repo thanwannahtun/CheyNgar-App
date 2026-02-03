@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/extensions/navigator_extension.dart';
 import 'package:flutter/material.dart';
 import '../../../core/env.dart';
 import '../../../core/route_util/route_names.dart';
 import '../../../data/share_preference.dart';
+import '../../bloc/contacts/contacts_cubit.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -39,6 +42,9 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
+    /// Fetch initial Contacts or wake up the server
+    context.read<ContactsCubit>().fetchContacts();
     // delayAndNavigateHomeScreen();
 
     /// Animation Setup

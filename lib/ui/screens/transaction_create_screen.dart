@@ -82,170 +82,164 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
               horizontal: MediaQuery.of(context).size.width * 0.05,
               vertical: 24,
             ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minWidth: MediaQuery.of(context).size.width * 0.6,
-                        maxHeight: MediaQuery.of(context).size.height * 0.8,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            spacing: 16,
-                            children: [
-                              InputForm(
-                                label:
-                                    widget.direction ==
-                                        TransactionDirection.borrow
-                                    ? "ချေးပေးသူအမည်"
-                                    : "ချေးသူအမည်",
-                                controller: _contactControllerRecord.controller,
-                                width: double.infinity,
-                                readOnly: true,
-                                onTap: (value) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => Dialog.fullscreen(
-                                      child: ContactSelectionDialog(
-                                        initialValue:
-                                            _contactControllerRecord.model,
-                                        onSelected: (value) {
-                                          setState(() {
-                                            _contactControllerRecord
-                                                    .controller
-                                                    .text =
-                                                value.name ?? '-';
-                                            _contactControllerRecord.model =
-                                                value;
-                                          });
-                                        },
-                                      ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          spacing: 16,
+                          children: [
+                            InputForm(
+                              label:
+                                  widget.direction ==
+                                      TransactionDirection.borrow
+                                  ? "ချေးပေးသူအမည်"
+                                  : "ချေးသူအမည်",
+                              controller: _contactControllerRecord.controller,
+                              width: double.infinity,
+                              readOnly: true,
+                              onTap: (value) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog.fullscreen(
+                                    child: ContactSelectionDialog(
+                                      initialValue:
+                                          _contactControllerRecord.model,
+                                      onSelected: (value) {
+                                        setState(() {
+                                          _contactControllerRecord
+                                                  .controller
+                                                  .text =
+                                              value.name ?? '-';
+                                          _contactControllerRecord.model =
+                                              value;
+                                        });
+                                      },
                                     ),
-                                  );
-                                },
+                                  ),
+                                );
+                              },
+                            ),
+                            // amount number only
+                            TextFormField(
+                              controller: _amountController,
+                              enabled: !isLoading,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: "ချေးငွေပမာဏ",
                               ),
-                              // amount number only
-                              TextFormField(
-                                controller: _amountController,
-                                enabled: !isLoading,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: "ချေးငွေပမာဏ",
-                                ),
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return "ချေးငွေပမာဏ ထည့်ပါ";
-                                  }
-                                  if (double.tryParse(val.trim()) == null) {
-                                    return "ချေးငွေပမာဏ မှန်ကန်မှုမရှိပါ";
-                                  }
-                                  return null;
-                                },
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return "ချေးငွေပမာဏ ထည့်ပါ";
+                                }
+                                if (double.tryParse(val.trim()) == null) {
+                                  return "ချေးငွေပမာဏ မှန်ကန်မှုမရှိပါ";
+                                }
+                                return null;
+                              },
+                            ),
+                            // interest rate decimal only (%) max 100 min 0.00
+                            TextFormField(
+                              controller: _interestRateController,
+                              enabled: !isLoading,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: "အတိုးနှုန်း (%)",
                               ),
-                              // interest rate decimal only (%) max 100 min 0.00
-                              TextFormField(
-                                controller: _interestRateController,
-                                enabled: !isLoading,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: "အတိုးနှုန်း (%)",
-                                ),
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return "အတိုးနှုန်း ထည့်ပါ";
-                                  }
-                                  final rate = double.tryParse(val.trim());
-                                  if (rate == null ||
-                                      rate < 0.0 ||
-                                      rate > 100.0) {
-                                    return "အတိုးနှုန်း မှန်ကန်မှုမရှိပါ";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              // date only picker
-                              DatePickerFormField(
-                                label: "ချေးသည့်ရက်စွဲ",
-                                value: _selectedDate,
-                                onChanged: (date) {
-                                  if (date != null) {
-                                    setState(() {
-                                      _selectedDate = date;
-                                    });
-                                  }
-                                },
-                              ),
-                              // due date picker
-                              DatePickerFormField(
-                                label: "ပေးဆပ်ရမည့်ရက်စွဲ",
-                                value: _dueDate,
-                                validateionEnabled: false,
-                                onChanged: (date) {
-                                  if (date != null) {
-                                    setState(() {
-                                      _dueDate = date;
-                                    });
-                                  }
-                                },
-                              ),
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return "အတိုးနှုန်း ထည့်ပါ";
+                                }
+                                final rate = double.tryParse(val.trim());
+                                if (rate == null ||
+                                    rate < 0.0 ||
+                                    rate > 100.0) {
+                                  return "အတိုးနှုန်း မှန်ကန်မှုမရှိပါ";
+                                }
+                                return null;
+                              },
+                            ),
+                            // date only picker
+                            DatePickerFormField(
+                              label: "ချေးသည့်ရက်စွဲ",
+                              value: _selectedDate,
+                              onChanged: (date) {
+                                if (date != null) {
+                                  setState(() {
+                                    _selectedDate = date;
+                                  });
+                                }
+                              },
+                            ),
+                            // due date picker
+                            DatePickerFormField(
+                              label: "ပေးဆပ်ရမည့်ရက်စွဲ",
+                              value: _dueDate,
+                              validateionEnabled: false,
+                              onChanged: (date) {
+                                if (date != null) {
+                                  setState(() {
+                                    _dueDate = date;
+                                  });
+                                }
+                              },
+                            ),
 
-                              TextFormField(
-                                controller: _remarkController,
-                                enabled: !isLoading,
-                                maxLines: null,
-                                decoration: const InputDecoration(
-                                  labelText: "မှတ်ချက်",
-                                ),
+                            TextFormField(
+                              controller: _remarkController,
+                              enabled: !isLoading,
+                              maxLines: null,
+                              decoration: const InputDecoration(
+                                labelText: "မှတ်ချက်",
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                ListTile(
-                  title: ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              context
-                                  .read<TransactionsCubit>()
-                                  .createTransaction(
-                                    Transaction(
-                                      contactId:
-                                          _contactControllerRecord.model?.id,
-                                      initialPrincipal: double.parse(
-                                        _amountController.text.trim(),
+                  ListTile(
+                    title: ElevatedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                context
+                                    .read<TransactionsCubit>()
+                                    .createTransaction(
+                                      Transaction(
+                                        contactId:
+                                            _contactControllerRecord.model?.id,
+                                        initialPrincipal: double.parse(
+                                          _amountController.text.trim(),
+                                        ),
+                                        interestRate: double.parse(
+                                          _interestRateController.text.trim(),
+                                        ),
+                                        startDate: _selectedDate,
+                                        remark: _remarkController.text.trim(),
+                                        direction: widget.direction,
+                                        dueDate: _dueDate,
+                                        interestType: InterestType.monthly,
                                       ),
-                                      interestRate: double.parse(
-                                        _interestRateController.text.trim(),
-                                      ),
-                                      startDate: _selectedDate,
-                                      remark: _remarkController.text.trim(),
-                                      direction: widget.direction,
-                                      dueDate: _dueDate,
-                                      interestType: InterestType.monthly,
-                                    ),
-                                  );
-                            }
-                          },
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text("Save"),
+                                    );
+                              }
+                            },
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text("Save"),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
