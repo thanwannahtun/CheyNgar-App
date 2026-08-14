@@ -50,7 +50,8 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
       final nrc = (contact.nrc ?? '').toLowerCase();
       final address = (contact.address ?? '').toLowerCase();
 
-      final matchesQuery = query.isEmpty ||
+      final matchesQuery =
+          query.isEmpty ||
           name.contains(query) ||
           phone.contains(query) ||
           nrc.contains(query) ||
@@ -101,21 +102,21 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
             builder: (_) => const ContactCreateUpdateDialog(),
           );
         },
-        tooltip: "New Contact",
+        tooltip: "လူသစ်ထည့်ရန်",
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
-        title: const Text("Contacts"),
+        title: const Text("လူစာရင်း"),
         actionsPadding: const EdgeInsets.only(right: 16),
         actions: [
           IconButton(
             icon: const Icon(Icons.sync_rounded),
-            tooltip: "Sync & Refresh",
+            tooltip: "စာရင်းများ ပြန်လည်ရယူရန်",
             onPressed: () {
               context.read<ContactsCubit>().fetchContacts(isRefresh: true);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Syncing contacts...'),
+                  content: Text('စာရင်းများ ပြန်လည်ရယူနေပါသည်...'),
                   duration: Duration(seconds: 1),
                 ),
               );
@@ -165,7 +166,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                       size: 18,
                     ),
                     SizedBox(width: 8),
-                    Text('Import Contacts'),
+                    Text('ဖိုင်မှ လူစာရင်းထည့်ရန် (Import)'),
                   ],
                 ),
               ),
@@ -180,7 +181,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                       size: 18,
                     ),
                     SizedBox(width: 8),
-                    Text('Export Contacts'),
+                    Text('လူစာရင်းများ ထုတ်ယူရန် (Export)'),
                   ],
                 ),
               ),
@@ -195,7 +196,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                       size: 18,
                     ),
                     SizedBox(width: 8),
-                    Text('Import via Google Contacts'),
+                    Text('Google အဆက်အသွယ်များမှ ရယူရန်'),
                   ],
                 ),
               ),
@@ -212,7 +213,9 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
 
           if (state.status == BlocStatus.failure) {
             return ErrorMessage(
-              message: state.message ?? "❌Error!",
+              message:
+                  state.message ??
+                  "❌ အချက်အလက်ရယူရာတွင် အမှားတစ်ခုဖြစ်ပွားခဲ့ပါသည်",
               onRetry: () {
                 context.read<ContactsCubit>().fetchContacts();
               },
@@ -222,11 +225,12 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
           final allContacts = state.contacts ?? [];
           if (allContacts.isEmpty) {
             return RefreshIndicator(
-              onRefresh: () => context.read<ContactsCubit>().fetchContacts(isRefresh: true),
+              onRefresh: () =>
+                  context.read<ContactsCubit>().fetchContacts(isRefresh: true),
               child: ListView(
                 children: [
                   SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-                  const Center(child: NoData(message: "No Contacts")),
+                  const Center(child: NoData(message: "လူစာရင်း မရှိသေးပါ")),
                 ],
               ),
             );
@@ -257,7 +261,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                   controller: _searchController,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: "Search by name, phone, NRC...",
+                    hintText: "အမည်၊ ဖုန်း၊ မှတ်ပုံတင်ဖြင့် ရှာရန်...",
                     prefixIcon: const Icon(Icons.search, size: 20),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
@@ -280,37 +284,63 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
               // Filter Chips
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: Row(
                   children: [
-                    _buildFilterChip('ALL', 'All', counts['ALL'] ?? 0),
+                    _buildFilterChip('ALL', 'အားလုံး', counts['ALL'] ?? 0),
                     const SizedBox(width: 8),
-                    _buildFilterChip('MANUAL', 'Manual', counts['MANUAL'] ?? 0),
+                    _buildFilterChip(
+                      'MANUAL',
+                      'ကိုယ်တိုင်ထည့်',
+                      counts['MANUAL'] ?? 0,
+                    ),
                     const SizedBox(width: 8),
-                    _buildFilterChip('GOOGLE', 'Google', counts['GOOGLE'] ?? 0),
+                    _buildFilterChip(
+                      'GOOGLE',
+                      'Google မှ',
+                      counts['GOOGLE'] ?? 0,
+                    ),
                     const SizedBox(width: 8),
-                    _buildFilterChip('INTERNAL', 'Internal', counts['INTERNAL'] ?? 0),
+                    _buildFilterChip(
+                      'INTERNAL',
+                      'အက်ပ်အတွင်း',
+                      counts['INTERNAL'] ?? 0,
+                    ),
                     const SizedBox(width: 8),
-                    _buildFilterChip('IMPORTED', 'Imported', counts['IMPORTED'] ?? 0),
+                    _buildFilterChip(
+                      'IMPORTED',
+                      'ဖိုင်မှသွင်းထား',
+                      counts['IMPORTED'] ?? 0,
+                    ),
                   ],
                 ),
               ),
 
               // Results Count Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Showing ${filteredContacts.length} of ${allContacts.length} contacts",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        "စုစုပေါင်း ${filteredContacts.length} ယောက်တွေ့ပါသည်",
+                        // "စုစုပေါင်း ${allContacts.length} ယောက်အနက် ${filteredContacts.length} ယောက်တွေ့ပါသည်",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                    if (_searchController.text.isNotEmpty || _selectedTypeFilter != 'ALL')
+                    if (_searchController.text.isNotEmpty ||
+                        _selectedTypeFilter != 'ALL')
                       GestureDetector(
                         onTap: () {
                           setState(() {
@@ -319,7 +349,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                           });
                         },
                         child: const Text(
-                          "Reset filters",
+                          "မူလအတိုင်းပြန်ထားရန်",
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.blue,
@@ -336,18 +366,28 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
               // Contacts Grid / List
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () => context.read<ContactsCubit>().fetchContacts(isRefresh: true),
+                  onRefresh: () => context.read<ContactsCubit>().fetchContacts(
+                    isRefresh: true,
+                  ),
                   child: filteredContacts.isEmpty
                       ? ListView(
                           children: [
-                            SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.15,
+                            ),
                             Center(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
+                                  Icon(
+                                    Icons.search_off,
+                                    size: 48,
+                                    color: Colors.grey.shade400,
+                                  ),
                                   const SizedBox(height: 12),
-                                  const Text("No matching contacts found"),
+                                  const Text(
+                                    "ရှာဖွေမှုနှင့် ကိုက်ညီသော လူစာရင်း မတွေ့ပါ",
+                                  ),
                                 ],
                               ),
                             ),
@@ -356,15 +396,17 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                       : GridView.builder(
                           padding: EdgeInsets.symmetric(
                             vertical: 8,
-                            horizontal: MediaQuery.of(context).size.width * 0.04,
+                            horizontal:
+                                MediaQuery.of(context).size.width * 0.04,
                           ),
                           itemCount: filteredContacts.length,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: childAspectRatio,
-                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: childAspectRatio,
+                              ),
                           itemBuilder: (context, index) {
                             final contact = filteredContacts[index];
                             final initial = _getInitial(contact.name);
@@ -384,7 +426,9 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                                           contact.name ?? "-",
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
-                                          style: const TextStyle(fontWeight: FontWeight.w600),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(width: 4),
@@ -397,26 +441,35 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                                     maxLines: 1,
                                   ),
                                   leading: CircleAvatar(
-                                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
                                     child: Text(
                                       initial,
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimaryContainer,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
                                   trailing: IconButton(
-                                    icon: const Icon(Icons.edit_outlined, size: 20),
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      size: 20,
+                                    ),
                                     onPressed: () {
                                       showDialog(
                                         barrierDismissible: false,
                                         context: context,
                                         builder: (_) =>
-                                            ContactCreateUpdateDialog(initial: contact),
+                                            ContactCreateUpdateDialog(
+                                              initial: contact,
+                                            ),
                                       );
                                     },
-                                    tooltip: "Edit Contact",
+                                    tooltip: "အချက်အလက်ပြင်ဆင်ရန်",
                                   ),
                                 ),
                               ),
@@ -447,18 +500,23 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
 
   Widget _buildTypeTag(String type) {
     Color color;
+    String label;
     switch (type.toUpperCase()) {
       case 'GOOGLE':
         color = Colors.blue;
+        label = "Google";
         break;
       case 'INTERNAL':
         color = Colors.purple;
+        label = "အက်ပ်အတွင်း";
         break;
       case 'IMPORTED':
         color = Colors.teal;
+        label = "ဖိုင်မှ";
         break;
       default:
         color = Colors.grey;
+        label = "ကိုယ်တိုင်";
     }
 
     return Container(
@@ -469,8 +527,12 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
         border: Border.all(color: color.withAlpha(80)),
       ),
       child: Text(
-        type,
-        style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: color),
+        label,
+        style: TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
       ),
     );
   }

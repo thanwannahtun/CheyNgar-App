@@ -156,7 +156,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
                         controller: _pinController,
                         keyboardType: TextInputType.number,
                         obscureText: true,
-                        maxLength: 4,
+                        maxLength: 6,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 28,
@@ -170,8 +170,8 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
                           border: OutlineInputBorder(),
                         ),
                         validator: (v) {
-                          if (v == null || v.length != 4) {
-                            return "4-digit PIN နံပါတ်";
+                          if (v == null || v.length != 6) {
+                            return "6-digit PIN နံပါတ်";
                           }
                           return null;
                         },

@@ -101,7 +101,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
 
     if (selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one contact to import')),
+        const SnackBar(content: Text('ကျေးဇူးပြု၍ အနည်းဆုံး လူစာရင်းတစ်ခု ရွေးချယ်ပေးပါ')),
       );
       return;
     }
@@ -115,7 +115,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Imported ${result['importedCount'] ?? 0} contacts (${result['updatedCount'] ?? 0} updated, ${result['skippedCount'] ?? 0} skipped)',
+            'စာရင်းသစ် ${result['importedCount'] ?? 0} ခု ထည့်သွင်းပြီးပါပြီ (${result['updatedCount'] ?? 0} ခု ပြင်ဆင်ပြီး၊ ${result['skippedCount'] ?? 0} ခု ကျော်ခဲ့သည်)',
           ),
           backgroundColor: Colors.green.shade700,
         ),
@@ -149,7 +149,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
               onPressed: isImporting ? null : () => context.pop(),
             ),
             title: const Text(
-              "Import from Google Contacts",
+              "Google အဆက်အသွယ်များမှ ရယူရန်",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             actions: [
@@ -161,7 +161,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                     children: [
                       Icon(Icons.refresh, size: 18),
                       SizedBox(width: 4),
-                      Text("Reload"),
+                      Text("အသစ်ပြန်ယူမည်"),
                     ],
                   ),
                 ),
@@ -175,7 +175,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                     children: [
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
-                      Text("Loading contacts from Google / Device..."),
+                      Text("Google နှင့် စက်ထဲရှိ ဖုန်းနံပါတ်များ ရှာဖွေနေပါသည်..."),
                     ],
                   ),
                 )
@@ -202,11 +202,11 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "$selectedCount of $totalCount selected",
+                                "$selectedCount / $totalCount ရွေးထားသည်",
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                               Text(
-                                _mergeStrategy == 'skip' ? "Skip duplicates" : "Update duplicates",
+                                _mergeStrategy == 'skip' ? "ထပ်နေသူများကို ကျော်မည်" : "ရှိပြီးသားများတွင် အချက်အလက်ဖြည့်မည်",
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -229,7 +229,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                                 )
                               : const Icon(Icons.download_rounded, size: 18),
                           label: Text(
-                            isImporting ? "Importing..." : "Import ($selectedCount)",
+                            isImporting ? "ထည့်သွင်းနေပါသည်..." : "စာရင်းသွင်းမည် ($selectedCount)",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -259,18 +259,18 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             children: [
               Row(
                 children: [
-                  _buildStatCard("Total Device", totalCount.toString(), Colors.blue, 'ALL'),
+                  _buildStatCard("စက်ထဲရှိဖုန်းများ", totalCount.toString(), Colors.blue, 'ALL'),
                   const SizedBox(width: 8),
-                  _buildStatCard("New Contacts", newCount.toString(), Colors.green, 'NEW'),
+                  _buildStatCard("စာရင်းသစ်များ", newCount.toString(), Colors.green, 'NEW'),
                   const SizedBox(width: 8),
-                  _buildStatCard("In Contacts", inContactsCount.toString(), Colors.orange, 'IN_CONTACTS'),
+                  _buildStatCard("ရှိပြီးသားစာရင်း", inContactsCount.toString(), Colors.orange, 'IN_CONTACTS'),
                 ],
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   const Text(
-                    "Duplicate Action:",
+                    "ထပ်နေသူများအတွက်:",
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(width: 8),
@@ -292,7 +292,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                           DropdownMenuItem(
                             value: 'skip',
                             child: Text(
-                              "Skip Existing Contacts",
+                              "ရှိပြီးသားများကို ကျော်မည်",
                               style: TextStyle(fontSize: 12),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -300,7 +300,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                           DropdownMenuItem(
                             value: 'overwrite',
                             child: Text(
-                              "Update/Merge Existing Contacts",
+                              "ရှိပြီးသားများတွင် ပြင်ဆင်/ဖြည့်စွက်မည်",
                               style: TextStyle(fontSize: 12),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -330,7 +330,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                   controller: _searchController,
                   onChanged: (_) => _applyFilters(),
                   decoration: InputDecoration(
-                    hintText: "Search name or phone...",
+                    hintText: "အမည် သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် ရှာရန်...",
                     prefixIcon: const Icon(Icons.search, size: 20),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
@@ -354,7 +354,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
                 onPressed: () => _toggleSelectAll(true),
-                child: const Text("Select All", style: TextStyle(fontSize: 12)),
+                child: const Text("အားလုံးရွေးမည်", style: TextStyle(fontSize: 12)),
               ),
               const SizedBox(width: 4),
               OutlinedButton(
@@ -363,7 +363,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
                 onPressed: () => _toggleSelectAll(false),
-                child: const Text("None", style: TextStyle(fontSize: 12)),
+                child: const Text("အားလုံးဖြုတ်မည်", style: TextStyle(fontSize: 12)),
               ),
             ],
           ),
@@ -383,7 +383,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                         Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
                         const SizedBox(height: 12),
                         Text(
-                          "No contacts match your criteria",
+                          "ရှာဖွေမှုနှင့် ကိုက်ညီသော အဆက်အသွယ် မတွေ့ပါ",
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ],
@@ -411,7 +411,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                         children: [
                           Expanded(
                             child: Text(
-                              contact.name ?? 'Unnamed',
+                              contact.name ?? 'အမည်မရှိ',
                               style: const TextStyle(fontWeight: FontWeight.w600),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -421,7 +421,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                         ],
                       ),
                       subtitle: Text(
-                        contact.phone ?? 'No phone number',
+                        contact.phone ?? 'ဖုန်းနံပါတ် မပါရှိပါ',
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -494,7 +494,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             border: Border.all(color: Colors.orange.shade300),
           ),
           child: Text(
-            "In Contacts",
+            "ရှိပြီးသား",
             style: TextStyle(fontSize: 10, color: Colors.orange.shade800, fontWeight: FontWeight.w500),
           ),
         );
@@ -507,7 +507,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             border: Border.all(color: Colors.blue.shade300),
           ),
           child: Text(
-            "Name Match",
+            "အမည်တူ",
             style: TextStyle(fontSize: 10, color: Colors.blue.shade800, fontWeight: FontWeight.w500),
           ),
         );
@@ -520,7 +520,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             border: Border.all(color: Colors.green.shade300),
           ),
           child: Text(
-            "New",
+            "အသစ်",
             style: TextStyle(fontSize: 10, color: Colors.green.shade800, fontWeight: FontWeight.w500),
           ),
         );
@@ -537,12 +537,12 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             Icon(Icons.no_accounts_outlined, size: 64, color: Colors.orange.shade600),
             const SizedBox(height: 16),
             const Text(
-              "Contacts Permission Required",
+              "ဖုန်းနံပါတ်များ ကြည့်ရှုခွင့် လိုအပ်ပါသည်",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              "To import contacts from Google or your device, please grant contacts permission in your device settings.",
+              "Google နှင့် စက်ထဲရှိ အဆက်အသွယ်စာရင်းများ ရယူနိုင်ရန် ဖုန်း Setting တွင် Contacts ခွင့်ပြုချက် (Permission) ပေးရန် လိုအပ်ပါသည်။",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey.shade600),
             ),
@@ -550,7 +550,7 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             ElevatedButton.icon(
               onPressed: _loadDeviceContacts,
               icon: const Icon(Icons.refresh),
-              label: const Text("Request Permission Again"),
+              label: const Text("ခွင့်ပြုချက် ပြန်လည်တောင်းဆိုရန်"),
             ),
           ],
         ),
@@ -568,14 +568,14 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 12),
             Text(
-              _errorMessage ?? "Failed to load contacts",
+              _errorMessage ?? "အဆက်အသွယ်များ ရယူရာတွင် အမှားဖြစ်ပွားခဲ့ပါသည်",
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.red),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadDeviceContacts,
-              child: const Text("Retry"),
+              child: const Text("ပြန်လည်ကြိုးစားမည်"),
             ),
           ],
         ),

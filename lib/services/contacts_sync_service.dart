@@ -59,7 +59,7 @@ class ContactsSyncService {
     final hasPermission = await requestContactsPermission();
     if (!hasPermission) {
       throw Exception(
-        "Contacts permission denied. Please enable contacts permission in settings.",
+        "ဖုန်းနံပါတ်များ ကြည့်ရှုခွင့် မရရှိပါ။ ကျေးဇူးပြု၍ ဖုန်း Setting တွင် Contacts ခွင့်ပြုချက် ပေးပါ။",
       );
     }
 
@@ -241,7 +241,7 @@ class ContactsSyncService {
         } else if (item is Map) {
           return Contact.fromJson(Map<String, dynamic>.from(item));
         }
-        throw Exception("Invalid item in JSON list");
+        throw Exception("JSON စာရင်းတွင် မှားယွင်းနေသော အချက်အလက် ပါဝင်နေပါသည်");
       }).toList();
     } else if (decoded is Map<String, dynamic>) {
       if (decoded['contacts'] is List) {
@@ -251,7 +251,7 @@ class ContactsSyncService {
       }
       return [Contact.fromJson(decoded)];
     }
-    throw Exception("Unsupported JSON format for contacts");
+    throw Exception("လူစာရင်း JSON ဖော်မတ် မမှန်ကန်ပါ");
   }
 
   /// Parse CSV string into contacts

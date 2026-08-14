@@ -76,4 +76,22 @@ class AuthRepo extends ApiService {
       rethrow;
     }
   }
+
+  Future<void> changePin({
+    required String currentPin,
+    required String newPin,
+  }) async {
+    try {
+      final response = await postRequest('/users/change-pin', {
+        'currentPin': currentPin.trim(),
+        'newPin': newPin.trim(),
+      });
+      if (response.statusCode == 200) {
+        return;
+      }
+      throw Exception(response.data['message'] ?? 'PIN ပြောင်းလဲရာတွင် အမှားဖြစ်ပွားခဲ့သည်');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

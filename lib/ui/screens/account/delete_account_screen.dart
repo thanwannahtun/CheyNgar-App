@@ -357,7 +357,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  'Data Protection: nayatech.myanmar@gmail.com\nAddress: BookBookmm.com, မန္တလေးမြို့, မြန်မာနိုင်ငံ',
+                                  'Data Protection: nayatech.myanmar@gmail.com\nAddress: မန္တလေးမြို့, မြန်မာနိုင်ငံ',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: cs.onSurfaceVariant,
                                     height: 1.6,

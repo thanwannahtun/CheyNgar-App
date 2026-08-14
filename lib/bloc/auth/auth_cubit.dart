@@ -93,4 +93,31 @@ class AuthCubit extends Cubit<AuthState> {
       rethrow; // so DeleteAccountScreen can show the error
     }
   }
+
+  // ────────────────────────────────────────────────────────────────
+  // Change PIN Code
+  // ────────────────────────────────────────────────────────────────
+  Future<bool> changePin({
+    required String currentPin,
+    required String newPin,
+  }) async {
+    emit(state.copyWith(changePinStatus: BlocStatus.loading));
+    try {
+      await _authRepo.changePin(currentPin: currentPin, newPin: newPin);
+      emit(state.copyWith(changePinStatus: BlocStatus.success));
+      return true;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          changePinStatus: BlocStatus.failure,
+          message: handleErrorMessage(e),
+        ),
+      );
+      return false;
+    }
+  }
+
+  void resetChangePinStatus() {
+    emit(state.copyWith(changePinStatus: BlocStatus.initial));
+  }
 }

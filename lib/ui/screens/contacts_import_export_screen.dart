@@ -38,7 +38,9 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
     _tabController = TabController(
       length: 2,
       vsync: this,
-      initialIndex: widget.initialTab == ImportExportInitialTab.importTab ? 0 : 1,
+      initialIndex: widget.initialTab == ImportExportInitialTab.importTab
+          ? 0
+          : 1,
     );
     _generateExportText();
   }
@@ -81,7 +83,7 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
       if (contacts.isEmpty) {
         setState(() {
           _parsedContacts = [];
-          _parseError = "No valid contact rows could be parsed.";
+          _parseError = "ဖော်မတ်မှန်ကန်သော လူစာရင်း မတွေ့ရှိပါ။";
         });
         return;
       }
@@ -99,7 +101,8 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
     } catch (e) {
       setState(() {
         _parsedContacts = [];
-        _parseError = "Parsing error: ${e.toString().replaceAll('Exception: ', '')}";
+        _parseError =
+            "ဖိုင်ဖတ်ရာတွင် အမှားဖြစ်ပွားပါသည်: ${e.toString().replaceAll('Exception: ', '')}";
       });
     }
   }
@@ -112,7 +115,9 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
 
     if (selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one contact to import')),
+        const SnackBar(
+          content: Text('ကျေးဇူးပြု၍ အနည်းဆုံး လူစာရင်းတစ်ခု ရွေးချယ်ပေးပါ'),
+        ),
       );
       return;
     }
@@ -126,7 +131,7 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Imported ${result['importedCount'] ?? 0} contacts (${result['updatedCount'] ?? 0} updated, ${result['skippedCount'] ?? 0} skipped)',
+            'စာရင်းသစ် ${result['importedCount'] ?? 0} ခု ထည့်သွင်းပြီးပါပြီ (${result['updatedCount'] ?? 0} ခု ပြင်ဆင်ပြီး၊ ${result['skippedCount'] ?? 0} ခု ကျော်ခဲ့သည်)',
           ),
           backgroundColor: Colors.green.shade700,
         ),
@@ -154,21 +159,24 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
               icon: const Icon(Icons.close),
               onPressed: isImporting ? null : () => context.pop(),
             ),
-            title: const Text("Import / Export Contacts"),
+            title: const Text("လူစာရင်း ထည့်သွင်းခြင်းနှင့် ထုတ်ယူခြင်း"),
             bottom: TabBar(
               controller: _tabController,
               tabs: const [
-                Tab(icon: Icon(Icons.sim_card_download), text: "Import Data"),
-                Tab(icon: Icon(Icons.upload_file_rounded), text: "Export Data"),
+                Tab(
+                  icon: Icon(Icons.sim_card_download),
+                  text: "စာရင်းသွင်းရန် (Import)",
+                ),
+                Tab(
+                  icon: Icon(Icons.upload_file_rounded),
+                  text: "စာရင်းထုတ်ယူရန် (Export)",
+                ),
               ],
             ),
           ),
           body: TabBarView(
             controller: _tabController,
-            children: [
-              _buildImportTab(isImporting),
-              _buildExportTab(),
-            ],
+            children: [_buildImportTab(isImporting), _buildExportTab()],
           ),
         );
       },
@@ -187,7 +195,7 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
             children: [
               Expanded(
                 child: Text(
-                  "Paste CSV or JSON contact data:",
+                  "CSV သို့မဟုတ် JSON ဖော်မတ်ဖြင့် စာရင်းထည့်သွင်းရန်:",
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -197,7 +205,10 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
               ),
               OutlinedButton.icon(
                 icon: const Icon(Icons.paste, size: 16),
-                label: const Text("Paste Clipboard", style: TextStyle(fontSize: 12)),
+                label: const Text(
+                  "Clipboard မှ ကူးထည့်မည်",
+                  style: TextStyle(fontSize: 12),
+                ),
                 onPressed: () async {
                   final data = await Clipboard.getData(Clipboard.kTextPlain);
                   if (data?.text != null) {
@@ -214,8 +225,11 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
             maxLines: 4,
             onChanged: (_) => _parseImportText(),
             decoration: InputDecoration(
-              hintText: "Name,Phone,NRC,Address\nAung Aung,0912345678,12/...,Yangon\n...",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              hintText:
+                  "အမည်,ဖုန်းနံပါတ်,မှတ်ပုံတင်,လိပ်စာ\nဦးအောင်,0912345678,၁၂/...,ရန်ကုန်\n...",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               contentPadding: const EdgeInsets.all(12),
             ),
           ),
@@ -235,8 +249,11 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
               children: [
                 Expanded(
                   child: Text(
-                    "Parsed ${_parsedContacts.length} contacts ($selectedCount selected)",
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    "တွေ့ရှိသော စာရင်း ${_parsedContacts.length} ခု ($selectedCount ခု ရွေးထားသည်)",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -253,11 +270,17 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
                     items: const [
                       DropdownMenuItem(
                         value: 'skip',
-                        child: Text("Skip Duplicates", style: TextStyle(fontSize: 12)),
+                        child: Text(
+                          "ရှိပြီးသားကို ကျော်မည်",
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                       DropdownMenuItem(
                         value: 'overwrite',
-                        child: Text("Update Duplicates", style: TextStyle(fontSize: 12)),
+                        child: Text(
+                          "ရှိပြီးသားကို ပြင်ဆင်မည်",
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ],
                     onChanged: (val) {
@@ -288,15 +311,24 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
                         setState(() => item.isSelected = val ?? false);
                       },
                       title: Text(
-                        item.contact.name ?? 'Unnamed',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        item.contact.name ?? 'အမည်မရှိ',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      subtitle: Text(item.contact.phone ?? '-', style: const TextStyle(fontSize: 12)),
+                      subtitle: Text(
+                        item.contact.phone ?? '-',
+                        style: const TextStyle(fontSize: 12),
+                      ),
                       secondary: CircleAvatar(
                         radius: 16,
                         child: Text(
                           initial,
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     );
@@ -314,21 +346,27 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
             children: [
               TextButton(
                 onPressed: isImporting ? null : () => context.pop(),
-                child: const Text("Close"),
+                child: const Text("ပိတ်မည်"),
               ),
               const SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: (selectedCount == 0 || isImporting) ? null : _performImport,
-                icon: isImporting
-                    ? const SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.download_rounded, size: 18),
-                label: Text(
-                  isImporting ? "Importing..." : "Import Selected ($selectedCount)",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: (selectedCount == 0 || isImporting)
+                      ? null
+                      : _performImport,
+                  icon: isImporting
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.download_rounded, size: 18),
+                  label: Text(
+                    isImporting
+                        ? "ထည့်သွင်းနေပါသည်..."
+                        : "($selectedCount) စာရင်းသွင်းမည်",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -339,7 +377,8 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
   }
 
   Widget _buildExportTab() {
-    final contactsCount = context.read<ContactsCubit>().state.contacts?.length ?? 0;
+    final contactsCount =
+        context.read<ContactsCubit>().state.contacts?.length ?? 0;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -350,8 +389,11 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
             children: [
               Expanded(
                 child: Text(
-                  "Export All ($contactsCount) Contacts",
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  "စုစုပေါင်း လူစာရင်း ($contactsCount) ယောက် ထုတ်ယူရန်",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               SegmentedButton<String>(
@@ -378,7 +420,9 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
               expands: true,
               style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 contentPadding: const EdgeInsets.all(12),
               ),
             ),
@@ -389,18 +433,27 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
             children: [
               TextButton(
                 onPressed: () => context.pop(),
-                child: const Text("Close"),
+                child: const Text("ပိတ်မည်"),
               ),
               const SizedBox(width: 8),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.copy, size: 18),
-                label: const Text("Copy All to Clipboard", style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: _exportText));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Contacts copied to clipboard!')),
-                  );
-                },
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.copy, size: 18),
+                  label: const Text(
+                    "Clipboard သို့ ကူးယူမည်",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: _exportText));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'လူစာရင်းများကို Clipboard သို့ ကူးယူပြီးပါပြီ!',
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

@@ -63,7 +63,7 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              widget.initial != null ? "Edit Contact" : "New Contact",
+              widget.initial != null ? "လူစာရင်း အချက်အလက်ပြင်ရန်" : "လူသစ်ထည့်ရန်",
             ),
             leading: IconButton(
               onPressed: () => context.pop(),
@@ -93,12 +93,13 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                           controller: _nameController,
                           enabled: !isLoading,
                           decoration: const InputDecoration(
-                            labelText: "Contact Name *",
+                            labelText: "အမည် / နာမည် *",
+                            hintText: "လူအမည် ထည့်ပါ",
                             prefixIcon: Icon(Icons.person_outline),
                           ),
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return "Name is required";
+                              return "အမည် ထည့်သွင်းပေးပါ";
                             }
                             return null;
                           },
@@ -109,12 +110,13 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                           enabled: !isLoading,
                           keyboardType: TextInputType.phone,
                           decoration: const InputDecoration(
-                            labelText: "Contact Phone *",
+                            labelText: "ဖုန်းနံပါတ် *",
+                            hintText: "09xxxxxxxxx",
                             prefixIcon: Icon(Icons.phone_outlined),
                           ),
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return "Phone is required";
+                              return "ဖုန်းနံပါတ် ထည့်သွင်းပေးပါ";
                             }
                             return null;
                           },
@@ -124,7 +126,8 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                           controller: _nrcController,
                           enabled: !isLoading,
                           decoration: const InputDecoration(
-                            labelText: "NRC / ID (Optional)",
+                            labelText: "မှတ်ပုံတင်အမှတ် (မထည့်လည်းရပါသည်)",
+                            hintText: "၁၂/ဥကတ(နိုင်)xxxxxx",
                             prefixIcon: Icon(Icons.badge_outlined),
                           ),
                         ),
@@ -134,7 +137,8 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                           enabled: !isLoading,
                           maxLines: 2,
                           decoration: const InputDecoration(
-                            labelText: "Address (Optional)",
+                            labelText: "နေရပ်လိပ်စာ (မထည့်လည်းရပါသည်)",
+                            hintText: "အိမ်အမှတ်၊ လမ်း၊ မြို့နယ်",
                             prefixIcon: Icon(Icons.location_on_outlined),
                           ),
                         ),
@@ -142,14 +146,14 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                         DropdownButtonFormField<String>(
                           initialValue: _contactType,
                           decoration: const InputDecoration(
-                            labelText: "Contact Type",
+                            labelText: "စာရင်းအမျိုးအစား",
                             prefixIcon: Icon(Icons.category_outlined),
                           ),
                           items: const [
-                            DropdownMenuItem(value: 'Manual', child: Text("Manual")),
-                            DropdownMenuItem(value: 'Google', child: Text("Google")),
-                            DropdownMenuItem(value: 'Internal', child: Text("Internal")),
-                            DropdownMenuItem(value: 'Imported', child: Text("Imported")),
+                            DropdownMenuItem(value: 'Manual', child: Text("ကိုယ်တိုင်ထည့်သွင်းမှု")),
+                            DropdownMenuItem(value: 'Google', child: Text("Google အဆက်အသွယ်")),
+                            DropdownMenuItem(value: 'Internal', child: Text("အက်ပ်အတွင်းစာရင်း")),
+                            DropdownMenuItem(value: 'Imported', child: Text("ဖိုင်မှသွင်းထားမှု")),
                           ],
                           onChanged: isLoading
                               ? null
@@ -186,7 +190,7 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                   width: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text("Delete", style: TextStyle(color: Colors.red)),
+              : const Text("ဖျက်မည်", style: TextStyle(color: Colors.red)),
         ),
       const SizedBox(width: 8),
       ElevatedButton(
@@ -219,7 +223,7 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                 width: 16,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Text("Save"),
+            : const Text("သိမ်းမည်"),
       ),
     ];
   }

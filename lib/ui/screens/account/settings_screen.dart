@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../bloc/auth/auth_cubit.dart';
 import '../../../bloc/theme_mode/theme_mode_cubit.dart';
 import '../../../core/env.dart';
+import '../../widgets/dialogs/change_pin_dialog.dart';
 import 'delete_account_screen.dart';
 import 'help_and_support_screen.dart';
 
@@ -78,6 +79,22 @@ class SettingsScreen extends StatelessWidget {
             cs: cs,
             theme: theme,
           ),
+
+          if (isAuthenticated)
+            _SettingsTile(
+              icon: Icons.lock_reset_rounded,
+              iconColor: cs.primary,
+              title: 'ပင်နံပါတ် အသစ်ပြောင်းမည်',
+              subtitle: 'လုံခြုံရေး PIN နံပါတ် အသစ်လဲလှယ်ရန်',
+              trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => const ChangePinDialog(),
+                );
+              },
+            ),
 
           _SettingsTile(
             icon: Icons.gavel_rounded,
@@ -330,9 +347,7 @@ class _ThemeModeTile extends StatelessWidget {
                 // Dropdown ရွေးလိုက်တာနဲ့ Cubit ရဲ့ toggleTheme ကိုလှမ်းခေါ်ပြီး State ရော Storage ပါ Update လုပ်မယ်
                 context.read<ThemeModeCubit>().toggleTheme(val);
               },
-              items: ThemeMode.values.where((m) => m != ThemeMode.system).map((
-                m,
-              ) {
+              items: ThemeMode.values.map((m) {
                 return DropdownMenuItem(value: m, child: Text(_label(m)));
               }).toList(),
             ),
