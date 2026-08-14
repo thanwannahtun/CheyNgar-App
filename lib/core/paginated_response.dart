@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../models/contact.dart';
+import '../models/repayment.dart';
 import '../models/transactions.dart';
 
 class PaginatedResponse<T> extends Equatable {
@@ -59,6 +60,11 @@ class PaginatedResponse<T> extends Equatable {
     if (T == Transaction) {
       data =
           (json["data"] as List).map((e) => Transaction.fromJson(e)).toList()
+              as List<T>;
+    }
+    if (T == Repayment) {
+      data =
+          (json["data"] as List).map((e) => Repayment.fromJson(e)).toList()
               as List<T>;
     }
 

@@ -23,4 +23,10 @@ class RouteNames {
   static const String searchedTripsResultScreen = "/trips_result";
 
   static const String loginScreen = "/login";
+
+  static const String supportUs = "/support_us";
+  static const String privacy = "/privacy";
+  static const String feedback = "/feedback";
+  static const String needCustomApp = "/need_custom_app_for_your_business";
+  static const String profileAccount = "/profile_account";
 }

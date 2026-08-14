@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/auth/auth_cubit.dart';
 import 'bloc/contacts/contacts_cubit.dart';
+import 'bloc/theme_mode/theme_mode_cubit.dart';
 import 'bloc/transaction_detail/transaction_detail_cubit.dart';
 import 'bloc/transactions/transactions_cubit.dart';
+import 'bloc/user_profile/user_profile_cubit.dart';
 import 'core/bloc_utils/app_bloc_observer.dart';
 import 'core/route_util/route_generator.dart';
 import 'core/route_util/route_names.dart';
@@ -50,16 +52,25 @@ class MyApp extends StatelessWidget {
             create: (BuildContext context) =>
                 TransactionDetailCubit(context.read()),
           ),
+          BlocProvider<UserProfileCubit>(
+            create: (BuildContext context) => UserProfileCubit(context.read()),
+          ),
+          BlocProvider<ThemeModeCubit>(
+            create: (BuildContext context) =>
+                ThemeModeCubit(ThemeMode.system)..init(),
+          ),
         ],
-        child: MaterialApp(
-          title: 'အချေးအငှား',
-          navigatorKey: navigatorKey,
-          themeMode: ThemeMode.system,
-          theme: buildLightTheme(),
-          darkTheme: buildDarkTheme(),
-          onGenerateRoute: RouteGenerator.onGenerateRoute,
-          initialRoute: RouteNames.splashScreen,
-          debugShowCheckedModeBanner: false,
+        child: BlocBuilder<ThemeModeCubit, ThemeMode>(
+          builder: (BuildContext context, ThemeMode state) => MaterialApp(
+            title: 'အချေးအငှား',
+            navigatorKey: navigatorKey,
+            themeMode: state,
+            theme: buildLightTheme(),
+            darkTheme: buildDarkTheme(),
+            onGenerateRoute: RouteGenerator.onGenerateRoute,
+            initialRoute: RouteNames.splashScreen,
+            debugShowCheckedModeBanner: false,
+          ),
         ),
       ),
     );

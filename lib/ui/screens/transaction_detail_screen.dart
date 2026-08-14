@@ -76,13 +76,16 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           }
 
           if (state.status == BlocStatus.failure) {
-            return ErrorMessage(
-              message: state.message ?? "❌Error!",
-              onRetry: () {
-                context.read<TransactionDetailCubit>().fetchTransactionDetail(
-                  transactionId,
-                );
-              },
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: ErrorMessage(
+                message: state.message ?? "❌Error!",
+                onRetry: () {
+                  context.read<TransactionDetailCubit>().fetchTransactionDetail(
+                    transactionId,
+                  );
+                },
+              ),
             );
           }
 
@@ -102,6 +105,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 );
               },
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// transaction info
                   Card(
@@ -189,65 +193,81 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   ),
 
                   /// repayments list
-                  (state.transaction!.repayments ?? []).isEmpty
-                      ? Expanded(
-                          child: NoData(message: "No Repayments made yet"),
-                        )
-                      : Expanded(
-                          child: ListView.separated(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            itemCount: state.transaction!.repayments!.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              final repayment =
-                                  state.transaction!.repayments![index];
-                              return Card(
-                                child: ListTile(
-                                  title: Row(
-                                    spacing: 8,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                  if ((state.transaction!.repayments ?? []).isEmpty)
+                    Expanded(child: NoData(message: "No Repayments made yet")),
+                  if ((state.transaction!.repayments ?? []).isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "ပြန်ဆပ်မှတ်တမ်းများ",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          // view all mini button
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text("view all"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if ((state.transaction!.repayments ?? []).isNotEmpty)
+                    Expanded(
+                      child: ListView.separated(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        itemCount: state.transaction!.repayments!.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final repayment =
+                              state.transaction!.repayments![index];
+                          return Card(
+                            child: ListTile(
+                              title: Row(
+                                spacing: 8,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            repayment.amountPaid?.toCurrency ??
-                                                "-",
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.titleMedium,
-                                          ),
-                                        ],
-                                      ),
                                       Text(
-                                        repayment.paymentDate != null
-                                            ? DateTimeUtil.formatDate(
-                                                repayment.paymentDate!,
-                                              )
-                                            : "-",
+                                        repayment.amountPaid?.toCurrency ?? "-",
                                         style: Theme.of(
                                           context,
-                                        ).textTheme.titleSmall,
+                                        ).textTheme.titleMedium,
                                       ),
                                     ],
                                   ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 4),
-
-                                      if (repayment.note != null &&
-                                          repayment.note!.isNotEmpty)
-                                        Text("မှတ်ချက်: ${repayment.note}"),
-                                    ],
+                                  Text(
+                                    repayment.paymentDate != null
+                                        ? DateTimeUtil.formatDate(
+                                            repayment.paymentDate!,
+                                          )
+                                        : "-",
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall,
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+
+                                  if (repayment.note != null &&
+                                      repayment.note!.isNotEmpty)
+                                    Text("မှတ်ချက်: ${repayment.note}"),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               ),
             ),

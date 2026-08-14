@@ -21,22 +21,14 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fade;
   late Animation<double> _scale;
-  Timer? _timer;
+  late Animation<double>
+  _shimmerSlide; // Drives the theater flashlight beam sweep
+  late Animation<double> _letterSpacing; // Dynamic horizontal layout expander
 
   @override
   void dispose() {
-    _timer?.cancel();
     _controller.dispose();
     super.dispose();
-  }
-
-  void delayAndNavigateHomeScreen() {
-    _timer = Timer.periodic(
-      const Duration(milliseconds: 1500),
-      (timer) => Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(RouteNames.app, (route) => false),
-    );
   }
 
   @override
@@ -47,18 +39,39 @@ class _SplashScreenState extends State<SplashScreen>
     context.read<ContactsCubit>().fetchContacts();
     // delayAndNavigateHomeScreen();
 
-    /// Animation Setup
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 2200), // Longer cinematic duration
     );
 
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _fade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+      ),
+    );
 
-    _scale = Tween<double>(
-      begin: 0.85,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _scale = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.7, curve: Curves.linearToEaseOut),
+      ),
+    );
+
+    // Moves the studio specular light flare from left (-2.0) to right (+2.0)
+    _shimmerSlide = Tween<double>(begin: -2.0, end: 2.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.2, 0.9, curve: Curves.easeInOut),
+      ),
+    );
+
+    _letterSpacing = Tween<double>(begin: 2.0, end: 12.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 1.0, curve: Curves.fastLinearToSlowEaseIn),
+      ),
+    );
 
     _controller.forward();
 
@@ -84,22 +97,106 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: FadeTransition(
-          opacity: _fade,
-          child: ScaleTransition(
-            scale: _scale,
-            child: Text(
-              "JLP Group Myanmar",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
+      backgroundColor: const Color(
+        0xFF070A12,
+      ), // Cinematic deep obsidian darkroom base
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Ambient background theater light beam backdrop
+          AnimatedBuilder(
+            animation: _scale,
+            builder: (context, child) {
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 0.8 * _scale.value,
+                    colors: [
+                      const Color(0xFF1E3A8A).withValues(
+                        alpha: 0.15,
+                      ), // Deep blue anamorphic flare glow
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // Foreground Animated Metallic Typography
+          Center(
+            child: FadeTransition(
+              opacity: _fade,
+              child: ScaleTransition(
+                scale: _scale,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return ShaderMask(
+                      blendMode: BlendMode.srcIn,
+                      shaderCallback: (bounds) {
+                        return LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: const [
+                            Color(0xFFE2E8F0), // Platinum
+                            Color(0xFF94A3B8), // Brushed Aluminum
+                            Colors.white, // Pure Specular Reflection Highlight
+                            Color(0xFF475569), // Dark Chrome
+                            Color(0xFFE2E8F0), // Platinum
+                          ],
+                          stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
+                          transform: GradientTransformSlide(
+                            _shimmerSlide.value,
+                          ),
+                        ).createShader(bounds);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "NaYa",
+                            style: Theme.of(context).textTheme.displayLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 64,
+                                  letterSpacing: _letterSpacing.value,
+                                  height: 1.0,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "MYANMAR",
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  letterSpacing: _letterSpacing.value * 1.2,
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
+  }
+}
+
+// Custom vector transformation class to offset gradient projections without external plugins
+class GradientTransformSlide extends GradientTransform {
+  final double dx;
+  const GradientTransformSlide(this.dx);
+
+  @override
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
+    return Matrix4.translationValues(bounds.width * dx, 0.0, 0.0);
   }
 }

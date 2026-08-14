@@ -27,6 +27,9 @@ class AuthState extends Equatable {
     );
   }
 
+  bool get isAuthenticated =>
+      status == BlocStatus.success && currentUser != null;
+
   @override
   List<Object?> get props => [status, registerStatus, currentUser, message];
 }

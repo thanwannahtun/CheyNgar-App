@@ -1,6 +1,12 @@
+import 'package:chey_ngar/ui/screens/support_screen.dart';
 import 'package:flutter/material.dart';
 import '../../app.dart';
+import '../../ui/screens/account/settings_screen.dart';
+import '../../ui/screens/account_screen.dart';
+import '../../ui/screens/feedback_screen.dart';
+import '../../ui/screens/need_custom_app_screen.dart';
 import '../../ui/screens/pin_auth_screen.dart';
+import '../../ui/screens/privacy_screen.dart';
 import '../../ui/screens/splash_screen.dart';
 import 'route_names.dart';
 
@@ -28,6 +34,48 @@ class RouteGenerator {
           builder: (context) {
             return const PinAuthScreen();
             // return const LoginScreen();
+          },
+        );
+      case RouteNames.supportUs:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const SupportScreen();
+          },
+        );
+      case RouteNames.privacy:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const PrivacyScreen();
+          },
+        );
+      case RouteNames.feedback:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const FeedbackScreen();
+          },
+        );
+      case RouteNames.needCustomApp:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const NeedCustomAppScreen();
+          },
+        );
+      case RouteNames.profileAccount:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const AccountScreen();
+          },
+        );
+      case RouteNames.settingScreen:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const SettingsScreen();
           },
         );
       default:

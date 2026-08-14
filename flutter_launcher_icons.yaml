@@ -1,0 +1,27 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/images/cheyngar.png"
+
+  android: "launcher_icon"
+  # image_path_android: "assets/icon/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/cheyngar.png"
+  adaptive_icon_monochrome: "assets/images/cheyngar.png"
+  #  adaptive_icon_foreground_inset: 16
+  # adaptive_icon_monochrome: "assets/icon/monochrome.png"
+  #adaptive_icon_background: "#FFFFFF" # Your light mode background hex
+  #adaptive_icon_foreground: "assets/images/bookbook-icon-foreground.png" # Transparent PNG
+  #adaptive_icon_monochrome: "assets/images/bookbook-icon-monochrome.png" # Pure black/transparent PNG
+
+  web:
+    generate: true
+    image_path: "assets/images/cheyngar.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+
+  windows:
+    generate: true
+    image_path: "assets/images/cheyngar.png"
+    icon_size: 48 # min:48, max:256, default: 48
+

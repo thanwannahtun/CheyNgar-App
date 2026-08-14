@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import '../env.dart';
+
 class BaseUrlInterceptor extends Interceptor {
   const BaseUrlInterceptor();
 
@@ -9,9 +11,7 @@ class BaseUrlInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     /// interceptor for adding baseurl in the request's base url
-    options.baseUrl = "https://chey-ngar-backend.onrender.com/api/v1";
-    // options.baseUrl = "http://localhost:3500/api/v1";
-    // options.baseUrl = "http://192.168.99.122:3300/api/v1";
+    options.baseUrl = Env.baseUrl;
     return handler.next(options);
   }
 }

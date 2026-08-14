@@ -16,6 +16,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _phoneController;
+  late final TextEditingController _nameController;
   late final TextEditingController _pinController;
 
   // toggle between login and registration
@@ -25,12 +26,14 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
   void initState() {
     super.initState();
     _phoneController = TextEditingController();
+    _nameController = TextEditingController();
     _pinController = TextEditingController();
   }
 
   @override
   void dispose() {
     _phoneController.dispose();
+    _nameController.dispose();
     _pinController.dispose();
     super.dispose();
   }
@@ -40,6 +43,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
 
     if (isRegistration) {
       context.read<AuthCubit>().register(
+        _nameController.text,
         _pinController.text,
         _phoneController.text,
       );
@@ -94,125 +98,140 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
         body: SafeArea(
           child: Form(
             key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                vertical: 24,
+                horizontal: MediaQuery.sizeOf(context).width * 0.05,
+              ),
               child: Column(
                 children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 40),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 40),
 
-                        /// Title
-                        Text(
-                          isRegistration
-                              ? "PIN အသစ်သတ်မှတ်ပါ"
-                              : "PIN ဖြင့် ဝင်ရောက်ပါ",
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      /// Title
+                      Text(
+                        isRegistration
+                            ? "PIN အသစ်သတ်မှတ်ပါ"
+                            : "PIN ဖြင့် ဝင်ရောက်ပါ",
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
 
-                        const SizedBox(height: 40),
+                      const SizedBox(height: 40),
 
-                        /// Phone
+                      /// Phone
+                      if (isRegistration)
                         TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
+                          controller: _nameController,
                           decoration: const InputDecoration(
-                            labelText: "Phone Number",
-                            prefixIcon: Icon(Icons.phone),
+                            labelText: "အသုံးပြုသူအမည်",
+                            prefixIcon: Icon(Icons.person),
                             border: OutlineInputBorder(),
                           ),
                           validator: (v) =>
-                              v == null || v.isEmpty ? "Phone required" : null,
+                              v == null || v.isEmpty ? "အသုံးပြုသူအမည်" : null,
                         ),
+                      const SizedBox(height: 20),
 
-                        const SizedBox(height: 20),
-
-                        /// PIN (System numeric keyboard)
-                        TextFormField(
-                          controller: _pinController,
-                          keyboardType: TextInputType.number,
-                          obscureText: true,
-                          maxLength: 4,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            letterSpacing: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: const InputDecoration(
-                            counterText: "",
-                            labelText: "PIN Code",
-                            prefixIcon: Icon(Icons.lock),
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (v) {
-                            if (v == null || v.length != 4) {
-                              return "4-digit PIN required";
-                            }
-                            return null;
-                          },
-                          onFieldSubmitted: (_) => _submit(),
+                      TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          labelText: "ဖုန်းနံပါတ်",
+                          prefixIcon: Icon(Icons.phone),
+                          border: OutlineInputBorder(),
                         ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? "ဖုန်းနံပါတ်" : null,
+                      ),
 
-                        const SizedBox(height: 32),
+                      const SizedBox(height: 20),
 
-                        /// Button
-                        BlocBuilder<AuthCubit, AuthState>(
-                          builder: (context, state) {
-                            final bool isLoading =
-                                state.status == BlocStatus.loading ||
-                                state.registerStatus == BlocStatus.loading;
+                      /// PIN (System numeric keyboard)
+                      TextFormField(
+                        controller: _pinController,
+                        keyboardType: TextInputType.number,
+                        obscureText: true,
+                        maxLength: 4,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          letterSpacing: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: const InputDecoration(
+                          counterText: "",
+                          labelText: "PIN နံပါတ်",
+                          prefixIcon: Icon(Icons.lock),
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.length != 4) {
+                            return "4-digit PIN နံပါတ်";
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) => _submit(),
+                      ),
 
-                            return SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: ElevatedButton(
-                                onPressed: isLoading ? null : _submit,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    if (isLoading) ...[
-                                      SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
+                      const SizedBox(height: 32),
+
+                      /// Button
+                      BlocBuilder<AuthCubit, AuthState>(
+                        builder: (context, state) {
+                          final bool isLoading =
+                              state.status == BlocStatus.loading ||
+                              state.registerStatus == BlocStatus.loading;
+
+                          return SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: isLoading ? null : _submit,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (isLoading) ...[
+                                    SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
                                       ),
-                                      SizedBox(width: 10),
-                                    ],
-                                    Text(isRegistration ? "Register" : "Login"),
+                                    ),
+                                    SizedBox(width: 10),
                                   ],
-                                ),
+                                  Text(isRegistration ? "Register" : "Login"),
+                                ],
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
+                      ),
 
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isRegistration = !isRegistration;
-                      });
-                    },
-                    child: Text(
-                      isRegistration
-                          ? "Already have an account? Login"
-                          : "Don't have an account? Register",
-                    ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
                 ],
               ),
+            ),
+          ),
+        ),
+        bottomNavigationBar: ListTile(
+          title: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isRegistration = !isRegistration;
+              });
+            },
+            child: Text(
+              isRegistration
+                  ? "Already have an account? Login"
+                  : "Don't have an account? Register",
             ),
           ),
         ),

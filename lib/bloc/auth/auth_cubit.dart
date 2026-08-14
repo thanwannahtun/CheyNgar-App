@@ -28,10 +28,25 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  register(String pinCode, String phoneNumber) async {
+  logout() async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    try {
+      await _authRepo.logout();
+      emit(state.copyWith(status: BlocStatus.success, currentUser: null));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: BlocStatus.failure,
+          message: handleErrorMessage(e),
+        ),
+      );
+    }
+  }
+
+  register(String name, String pinCode, String phoneNumber) async {
     emit(state.copyWith(registerStatus: BlocStatus.loading));
     try {
-      final user = await _authRepo.register(pinCode, phoneNumber);
+      final user = await _authRepo.register(name, pinCode, phoneNumber);
       emit(
         state.copyWith(registerStatus: BlocStatus.success, currentUser: user),
       );
@@ -42,6 +57,40 @@ class AuthCubit extends Cubit<AuthState> {
           message: handleErrorMessage(e),
         ),
       );
+    }
+  }
+
+  getProfile() async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    try {
+      final user = await _authRepo.getProfile();
+      emit(state.copyWith(status: BlocStatus.success, currentUser: user));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: BlocStatus.failure,
+          message: handleErrorMessage(e),
+        ),
+      );
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  // Delete Account
+  // ────────────────────────────────────────────────────────────────
+  Future<void> deleteAccount() async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    try {
+      await _authRepo.deleteAccount();
+      emit(const AuthState()); // back to guest/initial
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: BlocStatus.failure,
+          message: handleErrorMessage(e),
+        ),
+      );
+      rethrow; // so DeleteAccountScreen can show the error
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'package:chey_ngar/core/extensions/object_extension.dart';
+
 import '../../../core/extensions/navigator_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,6 +80,39 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
                         child: Column(
                           spacing: 16,
                           children: [
+                            // ပေးရန်ကျန်ငွေ
+                            Card(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  spacing: 8,
+                                  children: [
+                                    Text(
+                                      "စုစုပေါင်းပေးရန်ကျန်ငွေ",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
+                                    ),
+                                    Text(
+                                      "${state.transaction?.remainingPrincipal?.toCurrency ?? 0.0} Ks",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onErrorContainer,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                             // amount number only
                             TextFormField(
                               controller: _amountController,
@@ -128,7 +163,12 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
                             Text(
                               "မှတ်ချက်: ပြန်ဆပ်ငွေပမာဏသည် အတိုးနှုန်းမှ ဦးစွာနှုပ်မည်ဖြစ်သည်။ ပိုမိုသောငွေပမာဏကို အရင်းမှ ထပ်နှုပ်မည်ဖြစ်သည်။",
                               style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: Colors.grey),
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onErrorContainer
+                                        .withAlpha(200),
+                                  ),
                             ),
                           ],
                         ),

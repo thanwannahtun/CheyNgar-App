@@ -18,36 +18,39 @@ class ErrorMessage extends StatelessWidget {
     final isTablet = PlatformType.isTablet(context);
     if (isMobile || isTablet) {
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Lottie.asset(
-              'assets/lottie/not-found.json',
-              height: width * 0.5,
-              fit: BoxFit.contain,
-              width: width * 0.5,
-            ).expanded(flex: 5),
-
-            Text(
-              message,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            if (onRetry != null)
-              SizedBox(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Lottie.asset(
+                'assets/lottie/not-found.json',
+                height: width * 0.5,
+                fit: BoxFit.contain,
                 width: width * 0.5,
-                child: ListTile(
-                  title: TextButton.icon(
-                    onPressed: onRetry,
-                    icon: Icon(Icons.refresh),
-                    label: Text("Refresh"),
-                  ),
+              ).expanded(flex: 5),
+
+              Text(
+                message,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 3,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                 ),
-              ).expanded(),
-          ],
+              ),
+              if (onRetry != null)
+                SizedBox(
+                  width: width * 0.5,
+                  child: ListTile(
+                    title: TextButton.icon(
+                      onPressed: onRetry,
+                      icon: Icon(Icons.refresh),
+                      label: Text("Refresh"),
+                    ),
+                  ),
+                ).expanded(),
+            ],
+          ),
         ),
       );
     } else {
@@ -65,11 +68,9 @@ class ErrorMessage extends StatelessWidget {
                     Text(
                       message,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.displayMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     if (onRetry != null)

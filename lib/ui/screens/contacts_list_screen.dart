@@ -25,21 +25,79 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (_) => const ContactCreateUpdateDialog(),
+          );
+        },
+        tooltip: "New Transaction",
+        child: Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: const Text("Contacts"),
 
         actionsPadding: EdgeInsets.only(right: 16),
         actions: [
-          IconButton.outlined(
-            onPressed: () {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (_) => const ContactCreateUpdateDialog(),
-              );
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert_outlined),
+            onSelected: (value) async {
+              if (value == 'logout') {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Logged out successfully')),
+                  );
+                }
+              }
             },
-            icon: const Icon(Icons.add),
-            tooltip: "Add Contact",
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: "import-contacts",
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.sim_card_download,
+                      color: Colors.green,
+                      size: 18,
+                    ),
+                    SizedBox(width: 8),
+                    Text('Import Contacts'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: "export-contacts",
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.upload_file_rounded,
+                      color: Colors.green,
+                      size: 18,
+                    ),
+                    SizedBox(width: 8),
+                    Text('Export Contacts'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'import-from-gcontacts',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.contact_page_rounded,
+                      color: Colors.green,
+                      size: 18,
+                    ),
+                    SizedBox(width: 8),
+                    Text('Import via Google Contacts'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
