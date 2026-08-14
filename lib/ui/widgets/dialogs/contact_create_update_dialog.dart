@@ -18,6 +18,9 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _nrcController = TextEditingController();
+  final _addressController = TextEditingController();
+  String _contactType = 'Manual';
 
   @override
   void initState() {
@@ -25,6 +28,9 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
     if (widget.initial != null) {
       _nameController.text = widget.initial!.name ?? '';
       _phoneController.text = widget.initial!.phone ?? '';
+      _nrcController.text = widget.initial!.nrc ?? '';
+      _addressController.text = widget.initial!.address ?? '';
+      _contactType = widget.initial!.contactType ?? 'Manual';
     }
   }
 
@@ -32,6 +38,8 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _nrcController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -59,7 +67,7 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
             ),
             leading: IconButton(
               onPressed: () => context.pop(),
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
             ),
             actions: _buildActions(isLoading, context),
             actionsPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -73,20 +81,20 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minWidth: MediaQuery.of(context).size.width * 0.6,
-                  maxHeight: MediaQuery.of(context).size.height * 0.8,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      spacing: 16,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextFormField(
                           controller: _nameController,
                           enabled: !isLoading,
                           decoration: const InputDecoration(
-                            labelText: "Contact Name",
+                            labelText: "Contact Name *",
+                            prefixIcon: Icon(Icons.person_outline),
                           ),
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
@@ -95,11 +103,14 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                             return null;
                           },
                         ),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _phoneController,
                           enabled: !isLoading,
+                          keyboardType: TextInputType.phone,
                           decoration: const InputDecoration(
-                            labelText: "Contact Phone",
+                            labelText: "Contact Phone *",
+                            prefixIcon: Icon(Icons.phone_outlined),
                           ),
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
@@ -107,6 +118,46 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _nrcController,
+                          enabled: !isLoading,
+                          decoration: const InputDecoration(
+                            labelText: "NRC / ID (Optional)",
+                            prefixIcon: Icon(Icons.badge_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _addressController,
+                          enabled: !isLoading,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: "Address (Optional)",
+                            prefixIcon: Icon(Icons.location_on_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          initialValue: _contactType,
+                          decoration: const InputDecoration(
+                            labelText: "Contact Type",
+                            prefixIcon: Icon(Icons.category_outlined),
+                          ),
+                          items: const [
+                            DropdownMenuItem(value: 'Manual', child: Text("Manual")),
+                            DropdownMenuItem(value: 'Google', child: Text("Google")),
+                            DropdownMenuItem(value: 'Internal', child: Text("Internal")),
+                            DropdownMenuItem(value: 'Imported', child: Text("Imported")),
+                          ],
+                          onChanged: isLoading
+                              ? null
+                              : (val) {
+                                  if (val != null) {
+                                    setState(() => _contactType = val);
+                                  }
+                                },
                         ),
                       ],
                     ),
@@ -147,6 +198,13 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                     id: widget.initial?.id,
                     name: _nameController.text.trim(),
                     phone: _phoneController.text.trim(),
+                    nrc: _nrcController.text.trim().isNotEmpty
+                        ? _nrcController.text.trim()
+                        : null,
+                    address: _addressController.text.trim().isNotEmpty
+                        ? _addressController.text.trim()
+                        : null,
+                    contactType: _contactType,
                   );
                   if (widget.initial == null) {
                     context.read<ContactsCubit>().createContact(contact);

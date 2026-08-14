@@ -12,15 +12,21 @@ class ContactsCubit extends Cubit<ContactsState> {
   final ContactsRepo _contactsRepo;
   ContactsCubit(this._contactsRepo) : super(const ContactsState.init());
 
-  Future<void> fetchContacts() async {
+  Future<void> fetchContacts({
+    String? query,
+    String? contactType,
+    bool all = true,
+    bool isRefresh = false,
+  }) async {
     try {
-      // if (state.contacts?.isNotEmpty ?? false) {
-      //   // emit(state.copyWith(status: BlocStatus.success));
-      //   return;
-      // }
-
-      emit(state.copyWith(status: BlocStatus.loading));
-      final contacts = await _contactsRepo.fetchContacts();
+      if (!isRefresh) {
+        emit(state.copyWith(status: BlocStatus.loading));
+      }
+      final contacts = await _contactsRepo.fetchContacts(
+        query: query,
+        contactType: contactType,
+        all: all,
+      );
 
       emit(
         state.copyWith(
@@ -105,6 +111,44 @@ class ContactsCubit extends Cubit<ContactsState> {
           message: handleErrorMessage(e),
         ),
       );
+    }
+  }
+
+  Future<Map<String, dynamic>?> batchImportContacts(
+    List<Contact> contacts, {
+    String mergeStrategy = 'skip',
+  }) async {
+    try {
+      emit(state.copyWith(crudStatus: BlocStatus.loading));
+      final result = await _contactsRepo.batchImportContacts(
+        contacts,
+        mergeStrategy: mergeStrategy,
+      );
+
+      // Refresh contacts list from server after import
+      final updatedContacts = await _contactsRepo.fetchContacts();
+
+      final imported = result['importedCount'] ?? 0;
+      final updated = result['updatedCount'] ?? 0;
+      final skipped = result['skippedCount'] ?? 0;
+
+      emit(
+        state.copyWith(
+          crudStatus: BlocStatus.success,
+          contacts: updatedContacts,
+          filtedContacts: updatedContacts,
+          message: 'Imported: $imported, Updated: $updated, Skipped: $skipped',
+        ),
+      );
+      return result;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          crudStatus: BlocStatus.failure,
+          message: handleErrorMessage(e),
+        ),
+      );
+      return null;
     }
   }
 }

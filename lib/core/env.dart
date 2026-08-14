@@ -6,7 +6,8 @@ class Env {
   static const String accessToken = 'accessToken';
 
   // ─── Backend base URLs ────────────────────────────────────────
-  static const String baseUrlDev = 'http://localhost:3500/api/v1';
+  // static const String baseUrlDev = 'http://localhost:3500/api/v1';
+  static const String baseUrlDev = 'http://192.168.0.143:3500/api/v1';
 
   /// Production backend.
   static const String baseUrlProd =

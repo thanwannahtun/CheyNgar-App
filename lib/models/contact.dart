@@ -14,8 +14,16 @@ class Contact extends Equatable {
   final String? address;
   final String? nrc;
   final String? phone;
+  final String? contactType;
 
-  const Contact({this.id, this.name, this.nrc, this.address, this.phone});
+  const Contact({
+    this.id,
+    this.name,
+    this.nrc,
+    this.address,
+    this.phone,
+    this.contactType,
+  });
 
   Contact copyWith({
     int? id,
@@ -23,12 +31,14 @@ class Contact extends Equatable {
     String? phone,
     String? nrc,
     String? address,
+    String? contactType,
   }) => Contact(
     id: id ?? this.id,
     name: name ?? this.name,
     phone: phone ?? this.phone,
     nrc: nrc ?? this.nrc,
     address: address ?? this.address,
+    contactType: contactType ?? this.contactType,
   );
 
   factory Contact.fromJson(Map<String, dynamic> json) => Contact(
@@ -37,6 +47,7 @@ class Contact extends Equatable {
     phone: json['phone'],
     address: json['address'],
     nrc: json['nrc'],
+    contactType: json['contactType'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -45,13 +56,14 @@ class Contact extends Equatable {
     'phone': phone,
     'nrc': nrc,
     'address': address,
+    if (contactType != null) 'contactType': contactType,
   };
 
   @override
-  List<Object?> get props => [id, name, phone, nrc, address];
+  List<Object?> get props => [id, name, phone, nrc, address, contactType];
 
   @override
   String toString() {
-    return 'User(id: $id, name: $name, phone: $phone, nrc: $nrc, address: $address,)';
+    return 'Contact(id: $id, name: $name, phone: $phone, nrc: $nrc, address: $address, contactType: $contactType)';
   }
 }

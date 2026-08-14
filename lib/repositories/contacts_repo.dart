@@ -4,9 +4,25 @@ import '../models/contact.dart';
 class ContactsRepo extends ApiService {
   ContactsRepo();
 
-  Future<List<Contact>> fetchContacts() async {
+  Future<List<Contact>> fetchContacts({
+    String? query,
+    String? contactType,
+    bool all = true,
+  }) async {
     try {
-      final response = await getRequest('/contacts');
+      final Map<String, dynamic> queryParams = {};
+      if (all) queryParams['all'] = 'true';
+      if (query != null && query.trim().isNotEmpty) {
+        queryParams['search'] = query.trim();
+      }
+      if (contactType != null && contactType != 'ALL') {
+        queryParams['contactType'] = contactType;
+      }
+
+      final response = await getRequest(
+        '/contacts',
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      );
       if (response.statusCode == 200) {
         return (response.data["data"] as List)
             .map((e) => Contact.fromJson(e))
@@ -64,6 +80,24 @@ class ContactsRepo extends ApiService {
         return Contact.fromJson(response.data["data"]);
       }
       throw Exception("Invalid Response!");
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> batchImportContacts(
+    List<Contact> contacts, {
+    String mergeStrategy = 'skip',
+  }) async {
+    try {
+      final response = await postRequest('/contacts/batch', {
+        'contacts': contacts.map((c) => c.toJson()).toList(),
+        'mergeStrategy': mergeStrategy,
+      });
+      if (response.statusCode == 200) {
+        return response.data["data"] as Map<String, dynamic>;
+      }
+      throw Exception("Invalid Batch Import Response!");
     } catch (e) {
       rethrow;
     }
