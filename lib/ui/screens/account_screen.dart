@@ -89,7 +89,9 @@ class _AccountScreenState extends State<AccountScreen> {
               } else if (state.status == BlocStatus.failure) {
                 return Center(
                   child: ErrorMessage(
-                    message: state.message ?? "အချက်အလက် ရယူရာတွင် အမှားဖြစ်ပွားခဲ့ပါသည်",
+                    message:
+                        state.message ??
+                        "အချက်အလက် ရယူရာတွင် အမှားဖြစ်ပွားခဲ့ပါသည်",
                     onRetry: () => getUserInfo(),
                   ),
                 );
@@ -136,7 +138,9 @@ class _AccountScreenState extends State<AccountScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(

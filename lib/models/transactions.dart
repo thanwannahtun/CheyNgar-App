@@ -1,17 +1,3 @@
-// CREATE TABLE Transactions (
-// id INTEGER PRIMARY KEY AUTOINCREMENT,
-// contact_id INTEGER,
-// direction TEXT CHECK(direction IN ('LEND', 'BORROW')), -- LEND (အကြွေးရှင်), BORROW (ချေးသူ)
-// principal_amount DECIMAL(18, 2) NOT NULL,
-// interest_rate DECIMAL(5, 2), -- Percentage (e.g., 5.00 for 5%)
-// interest_type TEXT DEFAULT 'MONTHLY', -- DAILY, MONTHLY, FIXED
-// start_date DATE DEFAULT CURRENT_DATE,
-// due_date DATE,
-// status TEXT DEFAULT 'OPEN', -- OPEN, SETTLED, OVERDUE
-// remark TEXT,
-// FOREIGN KEY (contact_id) REFERENCES Contacts(id)
-// );
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -54,9 +40,9 @@ enum TransactionDirection {
 enum TransactionStatus {
   open('OPEN', Colors.blue, "ဖွင့်ထားဆဲ"),
   settled('SETTLED', Colors.green, "ရှင်းပြီး"),
-  overdue('OVERDUE', Colors.red, "ရက်လွန်"),
+  overdue('OVERDUE', Colors.orange, "ရက်လွန်"),
   writtenOff('WRITTEN_OFF', Colors.red, "ကြွေးဆုံး"), // Money lost
-  forgiven('FORGIVEN', Colors.grey, "လျှော်ပေးသည်"); // Debt cancelled
+  forgiven('FORGIVEN', Colors.purple, "လျှော်ပေးသည်"); // Debt cancelled
 
   final String value;
   final String displayMM;
@@ -66,7 +52,9 @@ enum TransactionStatus {
 
   static TransactionStatus fromString(String str) {
     return TransactionStatus.values.firstWhere(
-      (e) => e.toString().split('.').last.toUpperCase() == str.toUpperCase(),
+      (e) =>
+          e.value.toUpperCase() == str.toUpperCase() ||
+          e.name.toUpperCase() == str.replaceAll('_', '').toUpperCase(),
       orElse: () => TransactionStatus.open,
     );
   }
@@ -82,6 +70,11 @@ class Transaction extends Equatable {
   final DateTime? dueDate;
   final DateTime? lastInterestCalcDate;
   final String? remark;
+  final String? closureReason;
+  final int? guarantorContactId;
+  final Contact? guarantor;
+  final String? collateralDescription;
+  final double? collateralValue;
   final TransactionDirection? direction;
   final TransactionStatus? status;
   final InterestType? interestType;
@@ -93,6 +86,11 @@ class Transaction extends Equatable {
     this.lastInterestCalcDate,
     this.dueDate,
     this.remark,
+    this.closureReason,
+    this.guarantorContactId,
+    this.guarantor,
+    this.collateralDescription,
+    this.collateralValue,
     this.direction,
     this.status,
     this.interestType,
@@ -115,6 +113,11 @@ class Transaction extends Equatable {
     DateTime? dueDate,
     DateTime? lastInterestCalcDate,
     String? remark,
+    String? closureReason,
+    int? guarantorContactId,
+    Contact? guarantor,
+    String? collateralDescription,
+    double? collateralValue,
     TransactionDirection? direction,
     TransactionStatus? status,
     InterestType? interestType,
@@ -130,6 +133,12 @@ class Transaction extends Equatable {
     dueDate: dueDate ?? this.dueDate,
     lastInterestCalcDate: lastInterestCalcDate ?? this.lastInterestCalcDate,
     remark: remark ?? this.remark,
+    closureReason: closureReason ?? this.closureReason,
+    guarantorContactId: guarantorContactId ?? this.guarantorContactId,
+    guarantor: guarantor ?? this.guarantor,
+    collateralDescription:
+        collateralDescription ?? this.collateralDescription,
+    collateralValue: collateralValue ?? this.collateralValue,
     direction: direction ?? this.direction,
     status: status ?? this.status,
     interestType: interestType ?? this.interestType,
@@ -140,9 +149,15 @@ class Transaction extends Equatable {
   factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
     id: json['id'],
     contactId: json['contactId'],
-    initialPrincipal: double.parse(json['initialPrincipal'].toString()),
-    remainingPrincipal: double.parse(json['remainingPrincipal'].toString()),
-    interestRate: double.parse(json['interestRate'].toString()),
+    initialPrincipal: json['initialPrincipal'] != null
+        ? double.parse(json['initialPrincipal'].toString())
+        : null,
+    remainingPrincipal: json['remainingPrincipal'] != null
+        ? double.parse(json['remainingPrincipal'].toString())
+        : null,
+    interestRate: json['interestRate'] != null
+        ? double.parse(json['interestRate'].toString())
+        : null,
     status: json['status'] != null
         ? TransactionStatus.fromString(json['status'])
         : null,
@@ -154,6 +169,15 @@ class Transaction extends Equatable {
         ? InterestType.fromString(json['interestType'])
         : null,
     remark: json['remark'],
+    closureReason: json['closureReason'],
+    guarantorContactId: json['guarantorContactId'],
+    guarantor: json['guarantor'] != null
+        ? Contact.fromJson(json['guarantor'])
+        : null,
+    collateralDescription: json['collateralDescription'],
+    collateralValue: json['collateralValue'] != null
+        ? double.tryParse(json['collateralValue'].toString())
+        : null,
     startDate: json['startDate'] != null
         ? DateTime.parse(json['startDate'])
         : null,
@@ -169,19 +193,25 @@ class Transaction extends Equatable {
   );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'contactId': contactId,
-    'interestRate': interestRate,
-    'initialPrincipal': initialPrincipal,
-    'remainingPrincipal': remainingPrincipal,
-    'startDate': startDate?.toIso8601String(),
-    'dueDate': dueDate?.toIso8601String(),
-    'lastInterestCalcDate': lastInterestCalcDate?.toIso8601String(),
-    'remark': remark,
-    'direction': direction?.value,
-    'status': status?.value,
-    'interestType': interestType?.value,
-    'contact': contact?.toJson(),
+    if (id != null) 'id': id,
+    if (contactId != null) 'contactId': contactId,
+    if (interestRate != null) 'interestRate': interestRate,
+    if (initialPrincipal != null) 'initialPrincipal': initialPrincipal,
+    if (remainingPrincipal != null) 'remainingPrincipal': remainingPrincipal,
+    if (startDate != null) 'startDate': startDate?.toIso8601String(),
+    if (dueDate != null) 'dueDate': dueDate?.toIso8601String(),
+    if (lastInterestCalcDate != null)
+      'lastInterestCalcDate': lastInterestCalcDate?.toIso8601String(),
+    if (remark != null) 'remark': remark,
+    if (closureReason != null) 'closureReason': closureReason,
+    if (guarantorContactId != null) 'guarantorContactId': guarantorContactId,
+    if (collateralDescription != null)
+      'collateralDescription': collateralDescription,
+    if (collateralValue != null) 'collateralValue': collateralValue,
+    if (direction != null) 'direction': direction?.value,
+    if (status != null) 'status': status?.value,
+    if (interestType != null) 'interestType': interestType?.value,
+    if (contact != null) 'contact': contact?.toJson(),
   };
 
   @override
@@ -190,10 +220,16 @@ class Transaction extends Equatable {
     contactId,
     interestRate,
     initialPrincipal,
+    remainingPrincipal,
     startDate,
     dueDate,
     lastInterestCalcDate,
     remark,
+    closureReason,
+    guarantorContactId,
+    guarantor,
+    collateralDescription,
+    collateralValue,
     direction,
     status,
     interestType,
@@ -203,7 +239,6 @@ class Transaction extends Equatable {
 
   @override
   String toString() {
-    return 'Transaction(id: $id, contactId: $contactId, interestRate: $interestRate, initialPrincipal: $initialPrincipal,remainingPrincipal :$remainingPrincipal'
-        ' startDate: $startDate, dueDate: $dueDate,lastInterestCalcDate: $lastInterestCalcDate, remark: $remark, direction: $direction, status: $status, interestType: $interestType, repayments: $repayments)';
+    return 'Transaction(id: $id, contactId: $contactId, interestRate: $interestRate, initialPrincipal: $initialPrincipal, remainingPrincipal: $remainingPrincipal, startDate: $startDate, dueDate: $dueDate, lastInterestCalcDate: $lastInterestCalcDate, remark: $remark, closureReason: $closureReason, direction: $direction, status: $status, interestType: $interestType, guarantor: $guarantor, collateralDescription: $collateralDescription, collateralValue: $collateralValue, repayments: $repayments)';
   }
 }

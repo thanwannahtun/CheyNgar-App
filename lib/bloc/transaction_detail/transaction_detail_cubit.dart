@@ -16,7 +16,6 @@ class TransactionDetailCubit extends Cubit<TransactionDetailState> {
   Future<void> fetchTransactionDetail(int transactionId) async {
     try {
       emit(state.copyWith(status: BlocStatus.loading));
-      // await Future.delayed(Duration(seconds: 2));
       final transaction = await _transactionsRepo.fetchTransactionDetail(
         transactionId,
       );
@@ -33,6 +32,35 @@ class TransactionDetailCubit extends Cubit<TransactionDetailState> {
     }
   }
 
+  Future<void> updateStatus(
+    int transactionId, {
+    required TransactionStatus status,
+    String? closureReason,
+  }) async {
+    try {
+      emit(state.copyWith(statusChangeStatus: BlocStatus.loading));
+      final updated = await _transactionsRepo.updateTransactionStatus(
+        transactionId,
+        status: status.value,
+        closureReason: closureReason,
+      );
+      emit(
+        state.copyWith(
+          statusChangeStatus: BlocStatus.success,
+          transaction: updated,
+          message: "အခြေအနေကို အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ",
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          statusChangeStatus: BlocStatus.failure,
+          message: handleErrorMessage(e),
+        ),
+      );
+    }
+  }
+
   Future<void> createRepayment(Repayment repayment) async {
     try {
       emit(state.copyWith(crudStatus: BlocStatus.loading));
@@ -41,7 +69,6 @@ class TransactionDetailCubit extends Cubit<TransactionDetailState> {
         state.copyWith(
           crudStatus: BlocStatus.success,
           repayment: created,
-          // append the new repayment to the existing repayments list in state's transaction
           transaction: state.transaction?.copyWith(
             repayments: [...?state.transaction?.repayments, created],
           ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app.dart';
 import '../../ui/screens/account/settings_screen.dart';
 import '../../ui/screens/account_screen.dart';
+import '../../ui/screens/accounting_screen.dart';
 import '../../ui/screens/feedback_screen.dart';
 import '../../ui/screens/need_custom_app_screen.dart';
 import '../../ui/screens/pin_auth_screen.dart';
@@ -34,6 +35,13 @@ class RouteGenerator {
           builder: (context) {
             return const PinAuthScreen();
             // return const LoginScreen();
+          },
+        );
+      case RouteNames.accounting:
+        return _navigateRoute(
+          settings: settings,
+          builder: (context) {
+            return const AccountingScreen();
           },
         );
       case RouteNames.supportUs:

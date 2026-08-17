@@ -223,18 +223,19 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
           }
 
           final allContacts = state.contacts ?? [];
-          if (allContacts.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: () =>
-                  context.read<ContactsCubit>().fetchContacts(isRefresh: true),
-              child: ListView(
-                children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-                  const Center(child: NoData(message: "လူစာရင်း မရှိသေးပါ")),
-                ],
-              ),
-            );
-          }
+          // if (allContacts.isEmpty) {
+          //   return RefreshIndicator(
+          //     onRefresh: () =>
+          //         context.read<ContactsCubit>().fetchContacts(isRefresh: true),
+          //     child: ListView(
+          //       physics: const AlwaysScrollableScrollPhysics(),
+          //       children: [
+          //         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+          //         const Center(child: NoData(message: "လူစာရင်း မရှိသေးပါ")),
+          //       ],
+          //     ),
+          //   );
+          // }
 
           final filteredContacts = _filterContacts(allContacts);
           final counts = _calculateCounts(allContacts);

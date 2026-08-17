@@ -16,20 +16,17 @@ class _AppDrawerState extends State<AppDrawer> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          // SizedBox(height: 10),
-
-          ///
           DrawerHeader(
             decoration: BoxDecoration(
               color: Colors.green[800],
-              image: DecorationImage(
+              image: const DecorationImage(
                 image: AssetImage('assets/images/cheyngar.png'),
                 fit: BoxFit.contain,
               ),
             ),
-            child: SizedBox(),
+            child: const SizedBox(),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -40,9 +37,8 @@ class _AppDrawerState extends State<AppDrawer> {
               ).textTheme.titleLarge?.copyWith(fontSize: 18),
             ),
           ),
-          // Divider(),
           Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Text(
               'ဤအက်ပလီကေးရှင်းသည် သင့်၏ ငွေကြေးလိုအပ်ချက်များကို ဖြည့်ဆည်းရန် အချေးနှင့် အငှားဝန်ဆောင်မှုများကို ပံ့ပိုးပေးရန် ရည်ရွယ်ထားပါသည်။ ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုများကို အသုံးပြု၍ သင့်ဘဝကို ပိုမိုလွယ်ကူမြန်ဆန်လိုက်ပါ 💡',
               textAlign: TextAlign.start,
@@ -53,11 +49,10 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
           ),
-          Divider(),
+          const Divider(),
 
           ...List.generate(destinations.length, (index) {
             final dest = destinations[index];
-            // final isSelected = index == widget.selectedDestinationIndex;
             final isSelected = false;
             return ListTile(
               leading: Icon(
@@ -100,6 +95,12 @@ class Destination {
 }
 
 const List<Destination> destinations = <Destination>[
+  Destination(
+    Icons.account_balance_wallet_outlined,
+    'စာရင်းကိုင်နှင့် ဂျာနယ် (Accounting)',
+    Icons.account_balance_wallet_rounded,
+    routeName: RouteNames.accounting,
+  ),
   Destination(
     Icons.feedback_outlined,
     'Feedback',

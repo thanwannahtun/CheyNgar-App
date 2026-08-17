@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'bloc/accounting/accounting_cubit.dart';
 import 'bloc/auth/auth_cubit.dart';
 import 'bloc/contacts/contacts_cubit.dart';
 import 'bloc/theme_mode/theme_mode_cubit.dart';
@@ -11,6 +12,7 @@ import 'bloc/user_profile/user_profile_cubit.dart';
 import 'core/bloc_utils/app_bloc_observer.dart';
 import 'core/route_util/route_generator.dart';
 import 'core/route_util/route_names.dart';
+import 'repositories/accounting_repo.dart';
 import 'repositories/auth_repo.dart';
 import 'repositories/contacts_repo.dart';
 import 'repositories/transactions_repo.dart';
@@ -21,7 +23,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
   Bloc.observer = AppBlocObserver();
   runApp(const MyApp());
@@ -39,6 +41,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<TransactionsRepo>(
           create: (context) => TransactionsRepo(),
         ),
+        RepositoryProvider<AccountingRepo>(
+          create: (context) => AccountingRepo(),
+        ),
       ],
 
       child: MultiBlocProvider(
@@ -55,6 +60,9 @@ class MyApp extends StatelessWidget {
           BlocProvider<TransactionDetailCubit>(
             create: (BuildContext context) =>
                 TransactionDetailCubit(context.read()),
+          ),
+          BlocProvider<AccountingCubit>(
+            create: (BuildContext context) => AccountingCubit(context.read()),
           ),
           BlocProvider<UserProfileCubit>(
             create: (BuildContext context) => UserProfileCubit(context.read()),
@@ -93,15 +101,13 @@ ThemeData buildDarkTheme() {
     colorScheme: colorScheme,
     textTheme: TextTheme(
       titleLarge: TextStyle(color: colorScheme.primary),
-      // ...
     ),
-    // ...
     fontFamily: "Pyidaungsu",
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       iconTheme: IconThemeData(size: 15),
       titleTextStyle: TextStyle(fontSize: 14),
     ),
-    snackBarTheme: SnackBarThemeData(
+    snackBarTheme: const SnackBarThemeData(
       backgroundColor: Colors.black87,
       contentTextStyle: TextStyle(color: Colors.green),
     ),
@@ -119,9 +125,8 @@ ThemeData buildLightTheme() {
     colorScheme: colorScheme,
     textTheme: TextTheme(
       titleLarge: TextStyle(color: colorScheme.primary),
-      // ...
     ),
     fontFamily: "Pyidaungsu",
-    appBarTheme: AppBarTheme(iconTheme: IconThemeData(size: 15)),
+    appBarTheme: const AppBarTheme(iconTheme: IconThemeData(size: 15)),
   );
 }

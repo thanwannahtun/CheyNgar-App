@@ -49,6 +49,29 @@ class TransactionsRepo extends ApiService {
     }
   }
 
+  Future<Transaction> updateTransactionStatus(
+    int transactionId, {
+    required String status,
+    String? closureReason,
+  }) async {
+    try {
+      final response = await patchRequest(
+        '/transactions/$transactionId/status',
+        {
+          'status': status,
+          if (closureReason != null && closureReason.isNotEmpty)
+            'closureReason': closureReason,
+        },
+      );
+      if (response.statusCode == 200) {
+        return Transaction.fromJson(response.data["data"]);
+      }
+      throw Exception("Invalid Response!");
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Repayment> createRepayment(Repayment payment) async {
     try {
       final response = await postRequest('/repayments', payment.toJson());

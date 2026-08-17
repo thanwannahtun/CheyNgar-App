@@ -2,6 +2,7 @@ import 'package:chey_ngar/models/transactions.dart';
 import 'package:chey_ngar/ui/screens/contacts_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'core/route_util/route_names.dart';
+import 'ui/screens/accounting_screen.dart';
 import 'ui/screens/transactions_list_screen.dart';
 import 'ui/widgets/app_drawer.dart';
 import 'ui/widgets/quick_calculator_screen.dart';
@@ -17,7 +18,7 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: Text(
           'အချေးအငှား',
@@ -60,9 +61,7 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
                       context,
                       title: "ချေးယူထားသော ငွေ",
                       subtitle: "စုစုပေါင်း ချေးယူငွေ",
-                      // icon: Icons.attach_money,
                       icon: Icons.call_received_rounded,
-                      // color: Colors.teal,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       onTap: () {
                         Navigator.push(
@@ -87,7 +86,6 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            // builder: (context) => const DashboardScreen(),
                             builder: (context) => const TransactionsListScreen(
                               direction: TransactionDirection.lend,
                             ),
@@ -99,7 +97,7 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 4),
             Card(
               child: Row(
                 spacing: 8,
@@ -122,7 +120,6 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
                       },
                     ),
                   ),
-
                   Expanded(
                     child: _reportCard(
                       context,
@@ -134,13 +131,32 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => InterestSimulatorScreen(),
+                            builder: (context) => const InterestSimulatorScreen(),
                           ),
                         );
                       },
                     ),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Accounting & Double-Entry Ledger Card
+            Card(
+              child: _reportCard(
+                context,
+                title: "စာရင်းကိုင်နှင့် ဂျာနယ် (Accounting)",
+                subtitle: "ဒက်ဘစ်/ခရက်ဒစ် စာရင်း၊ ဘဏ္ဍာရေး အနှစ်ချုပ်နှင့် အမြတ်/အရှုံး",
+                icon: Icons.account_balance_wallet_rounded,
+                color: Colors.teal,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountingScreen(),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16),

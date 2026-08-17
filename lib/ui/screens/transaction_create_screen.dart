@@ -25,10 +25,18 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
   late final TextEditingController _amountController;
   late final TextEditingController _interestRateController;
   late final TextEditingController _remarkController;
+  late final TextEditingController _collateralDescController;
+  late final TextEditingController _collateralValueController;
   late DateTime _selectedDate;
   late DateTime _dueDate;
+  bool _showAdvancedOptions = false;
 
   final _contactControllerRecord = ControllerRecord<Contact>(
+    controller: TextEditingController(),
+    model: null,
+  );
+
+  final _guarantorControllerRecord = ControllerRecord<Contact>(
     controller: TextEditingController(),
     model: null,
   );
@@ -39,6 +47,8 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
     _amountController = TextEditingController();
     _interestRateController = TextEditingController();
     _remarkController = TextEditingController();
+    _collateralDescController = TextEditingController();
+    _collateralValueController = TextEditingController();
     _selectedDate = DateTime.now();
     _dueDate = _selectedDate.add(const Duration(days: 30));
   }
@@ -48,7 +58,10 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
     _amountController.dispose();
     _interestRateController.dispose();
     _remarkController.dispose();
+    _collateralDescController.dispose();
+    _collateralValueController.dispose();
     _contactControllerRecord.disposeAll();
+    _guarantorControllerRecord.disposeAll();
     super.dispose();
   }
 
@@ -78,20 +91,20 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
             ),
             leading: IconButton(
               onPressed: () => context.pop(),
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
             ),
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05,
-              vertical: 24,
+              vertical: 16,
             ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(20),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -100,9 +113,9 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                             InputForm(
                               label:
                                   widget.direction ==
-                                      TransactionDirection.borrow
-                                  ? "ချေးပေးသူအမည်"
-                                  : "ချေးသူအမည်",
+                                          TransactionDirection.borrow
+                                      ? "ချေးပေးသူအမည်"
+                                      : "ချေးသူအမည်",
                               controller: _contactControllerRecord.controller,
                               width: double.infinity,
                               readOnly: true,
@@ -134,7 +147,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                               enabled: !isLoading,
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
-                                labelText: "ချေးငွေပမာဏ",
+                                labelText: "ချေးငွေပမာဏ (MMK)",
                               ),
                               validator: (val) {
                                 if (val == null || val.trim().isEmpty) {
@@ -207,12 +220,133 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                       ),
                     ),
                   ),
+
+                  // Optional Guarantor & Collateral Accordion/Section
+                  Card(
+                    child: ExpansionTile(
+                      initiallyExpanded: _showAdvancedOptions,
+                      onExpansionChanged: (expanded) {
+                        setState(() {
+                          _showAdvancedOptions = expanded;
+                        });
+                      },
+                      leading: Icon(
+                        Icons.shield_outlined,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: const Text(
+                        "အာမခံသူနှင့် အပေါင်ပစ္စည်း (ရွေးချယ်ရန်)",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        "Guarantor & Collateral info (Optional)",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Column(
+                            spacing: 12,
+                            children: [
+                              // Guarantor Contact Picker
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: InputForm(
+                                      label: "အာမခံသူ အမည် (Guarantor)",
+                                      controller:
+                                          _guarantorControllerRecord.controller,
+                                      width: double.infinity,
+                                      readOnly: true,
+                                      onTap: (value) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              Dialog.fullscreen(
+                                                child: ContactSelectionDialog(
+                                                  initialValue:
+                                                      _guarantorControllerRecord
+                                                          .model,
+                                                  onSelected: (value) {
+                                                    setState(() {
+                                                      _guarantorControllerRecord
+                                                              .controller
+                                                              .text =
+                                                          value.name ?? '-';
+                                                      _guarantorControllerRecord
+                                                              .model =
+                                                          value;
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  if (_guarantorControllerRecord.model != null)
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _guarantorControllerRecord
+                                              .controller
+                                              .clear();
+                                          _guarantorControllerRecord.model =
+                                              null;
+                                        });
+                                      },
+                                    ),
+                                ],
+                              ),
+
+                              // Collateral Description
+                              TextFormField(
+                                controller: _collateralDescController,
+                                enabled: !isLoading,
+                                decoration: const InputDecoration(
+                                  labelText:
+                                      "အပေါင်ပစ္စည်း အသေးစိတ် (ဥပမာ- ရွှေ၊ ဖုန်း၊ ကား၊ မြေဂရန်)",
+                                  prefixIcon: Icon(Icons.inventory_2_outlined),
+                                ),
+                              ),
+
+                              // Collateral Value
+                              TextFormField(
+                                controller: _collateralValueController,
+                                enabled: !isLoading,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  labelText: "အပေါင်ပစ္စည်း ခန့်မှန်းတန်ဖိုး (MMK)",
+                                  prefixIcon: Icon(Icons.attach_money),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
                   ListTile(
                     title: ElevatedButton(
                       onPressed: isLoading
                           ? null
                           : () {
                               if (_formKey.currentState?.validate() ?? false) {
+                                final colValue = double.tryParse(
+                                  _collateralValueController.text.trim(),
+                                );
                                 context
                                     .read<TransactionsCubit>()
                                     .createTransaction(
@@ -230,6 +364,20 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                                         direction: widget.direction,
                                         dueDate: _dueDate,
                                         interestType: InterestType.monthly,
+                                        guarantorContactId:
+                                            _guarantorControllerRecord
+                                                .model
+                                                ?.id,
+                                        collateralDescription:
+                                            _collateralDescController
+                                                    .text
+                                                    .trim()
+                                                    .isNotEmpty
+                                                ? _collateralDescController
+                                                    .text
+                                                    .trim()
+                                                : null,
+                                        collateralValue: colValue,
                                       ),
                                     );
                               }
@@ -240,7 +388,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                               width: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text("Save"),
+                          : const Text("သိမ်းဆည်းမည် (Save)"),
                     ),
                   ),
                 ],
