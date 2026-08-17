@@ -251,173 +251,169 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
             childAspectRatio = 7 / 3;
           }
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Search & Filter Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    hintText: "အမည်၊ ဖုန်း၊ မှတ်ပုံတင်ဖြင့် ရှာရန်...",
-                    prefixIcon: const Icon(Icons.search, size: 20),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {});
-                            },
-                          )
-                        : null,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 8,
+              horizontal: MediaQuery.of(context).size.width * 0.05,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Search & Filter Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: "အမည်၊ ဖုန်း၊ မှတ်ပုံတင်ဖြင့် ရှာရန်...",
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {});
+                              },
+                            )
+                          : null,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // Filter Chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
-                ),
-                child: Row(
-                  children: [
-                    _buildFilterChip('ALL', 'အားလုံး', counts['ALL'] ?? 0),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      'MANUAL',
-                      'ကိုယ်တိုင်ထည့်',
-                      counts['MANUAL'] ?? 0,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      'GOOGLE',
-                      'Google မှ',
-                      counts['GOOGLE'] ?? 0,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      'INTERNAL',
-                      'အက်ပ်အတွင်း',
-                      counts['INTERNAL'] ?? 0,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      'IMPORTED',
-                      'ဖိုင်မှသွင်းထား',
-                      counts['IMPORTED'] ?? 0,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Results Count Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "စုစုပေါင်း ${filteredContacts.length} ယောက်တွေ့ပါသည်",
-                        // "စုစုပေါင်း ${allContacts.length} ယောက်အနက် ${filteredContacts.length} ယောက်တွေ့ပါသည်",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                // Filter Chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      _buildFilterChip('ALL', 'အားလုံး', counts['ALL'] ?? 0),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(
+                        'MANUAL',
+                        'ကိုယ်တိုင်ထည့်',
+                        counts['MANUAL'] ?? 0,
                       ),
-                    ),
-                    if (_searchController.text.isNotEmpty ||
-                        _selectedTypeFilter != 'ALL')
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _searchController.clear();
-                            _selectedTypeFilter = 'ALL';
-                          });
-                        },
-                        child: const Text(
-                          "မူလအတိုင်းပြန်ထားရန်",
+                      const SizedBox(width: 8),
+                      _buildFilterChip(
+                        'GOOGLE',
+                        'Google မှ',
+                        counts['GOOGLE'] ?? 0,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(
+                        'INTERNAL',
+                        'အက်ပ်အတွင်း',
+                        counts['INTERNAL'] ?? 0,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(
+                        'IMPORTED',
+                        'ဖိုင်မှသွင်းထား',
+                        counts['IMPORTED'] ?? 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Results Count Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "စုစုပေါင်း ${filteredContacts.length} ယောက်တွေ့ပါသည်",
+                          // "စုစုပေါင်း ${allContacts.length} ယောက်အနက် ${filteredContacts.length} ယောက်တွေ့ပါသည်",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
-                  ],
-                ),
-              ),
-
-              const Divider(height: 8),
-
-              // Contacts Grid / List
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => context.read<ContactsCubit>().fetchContacts(
-                    isRefresh: true,
-                  ),
-                  child: filteredContacts.isEmpty
-                      ? ListView(
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.15,
+                      if (_searchController.text.isNotEmpty ||
+                          _selectedTypeFilter != 'ALL')
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _searchController.clear();
+                              _selectedTypeFilter = 'ALL';
+                            });
+                          },
+                          child: const Text(
+                            "မူလအတိုင်းပြန်ထားရန်",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
                             ),
-                            Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.search_off,
-                                    size: 48,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    "ရှာဖွေမှုနှင့် ကိုက်ညီသော လူစာရင်း မတွေ့ပါ",
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : GridView.builder(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal:
-                                MediaQuery.of(context).size.width * 0.04,
                           ),
-                          itemCount: filteredContacts.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: childAspectRatio,
-                              ),
-                          itemBuilder: (context, index) {
-                            final contact = filteredContacts[index];
-                            final initial = _getInitial(contact.name);
-                            final type = contact.contactType ?? 'Manual';
+                        ),
+                    ],
+                  ),
+                ),
 
-                            return Card(
-                              elevation: 1.5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                const Divider(height: 8),
+
+                // Contacts Grid / List
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => context
+                        .read<ContactsCubit>()
+                        .fetchContacts(isRefresh: true),
+                    child: filteredContacts.isEmpty
+                        ? ListView(
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.15,
                               ),
-                              child: Center(
+                              Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 48,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      "ရှာဖွေမှုနှင့် ကိုက်ညီသော လူစာရင်း မတွေ့ပါ",
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : GridView.builder(
+                            itemCount: filteredContacts.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: childAspectRatio,
+                                ),
+                            itemBuilder: (context, index) {
+                              final contact = filteredContacts[index];
+                              final initial = _getInitial(contact.name);
+                              final type = contact.contactType ?? 'Manual';
+
+                              return Card(
+                                elevation: 1.5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                                 child: ListTile(
                                   title: Row(
                                     children: [
@@ -441,6 +437,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                                     maxLines: 1,
                                   ),
                                   leading: CircleAvatar(
+                                    maxRadius: 30,
                                     backgroundColor: Theme.of(
                                       context,
                                     ).colorScheme.primaryContainer,
@@ -472,13 +469,13 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                                     tooltip: "အချက်အလက်ပြင်ဆင်ရန်",
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),

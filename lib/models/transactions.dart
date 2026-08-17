@@ -52,14 +52,17 @@ enum TransactionDirection {
 }
 
 enum TransactionStatus {
-  open('OPEN', Colors.blue),
-  settled('SETTLED', Colors.green),
-  overdue('OVERDUE', Colors.red);
+  open('OPEN', Colors.blue, "ဖွင့်ထားဆဲ"),
+  settled('SETTLED', Colors.green, "ရှင်းပြီး"),
+  overdue('OVERDUE', Colors.red, "ရက်လွန်"),
+  writtenOff('WRITTEN_OFF', Colors.red, "ကြွေးဆုံး"), // Money lost
+  forgiven('FORGIVEN', Colors.grey, "လျှော်ပေးသည်"); // Debt cancelled
 
   final String value;
+  final String displayMM;
   final Color color;
 
-  const TransactionStatus(this.value, this.color);
+  const TransactionStatus(this.value, this.color, this.displayMM);
 
   static TransactionStatus fromString(String str) {
     return TransactionStatus.values.firstWhere(

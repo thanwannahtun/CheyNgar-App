@@ -70,7 +70,11 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
               child: Icon(Icons.add),
             ),
             appBar: AppBar(
-              title: const Text("Transactions List"),
+              title: Text(
+                widget.direction == TransactionDirection.borrow
+                    ? "ချေးယူမှု မှတ်တမ်း"
+                    : "ချေးပေးမှု မှတ်တမ်း",
+              ),
 
               actionsPadding: EdgeInsets.only(right: 16),
               actions: [
@@ -333,6 +337,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                     EnumDropdown<TransactionStatus>(
                       label: "Payment Status",
                       items: TransactionStatus.values,
+                      displayName: (TransactionStatus value) => value.displayMM,
                     ),
 
                     ListTile(

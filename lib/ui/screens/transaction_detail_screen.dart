@@ -64,7 +64,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           ),
 
       appBar: AppBar(
-        title: const Text("Transaction Detail"),
+        title: const Text("အသေးစိတ်မှတ်တမ်း"),
         actionsPadding: EdgeInsets.only(right: 16),
         actions: [],
       ),

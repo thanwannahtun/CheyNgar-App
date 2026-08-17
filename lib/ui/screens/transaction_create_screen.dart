@@ -71,7 +71,11 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text("New Transaction"),
+            title: Text(
+              widget.direction == TransactionDirection.borrow
+                  ? "ချေးယူမှု အသစ်"
+                  : "ချေးပေးမှု အသစ်",
+            ),
             leading: IconButton(
               onPressed: () => context.pop(),
               icon: Icon(Icons.close),
@@ -165,6 +169,7 @@ class _TransactionCreateScreenState extends State<TransactionCreateScreen> {
                             ),
                             // date only picker
                             DatePickerFormField(
+                              firstDate: DateTime(DateTime.now().year - 10),
                               label: "ချေးသည့်ရက်စွဲ",
                               value: _selectedDate,
                               onChanged: (date) {

@@ -187,7 +187,10 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
     final selectedCount = _parsedContacts.where((c) => c.isSelected).length;
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        vertical: 8,
+        horizontal: MediaQuery.of(context).size.width * 0.05,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -381,7 +384,10 @@ class _ContactsImportExportScreenState extends State<ContactsImportExportScreen>
         context.read<ContactsCubit>().state.contacts?.length ?? 0;
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        vertical: 8,
+        horizontal: MediaQuery.of(context).size.width * 0.05,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

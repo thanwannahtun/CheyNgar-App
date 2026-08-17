@@ -4,15 +4,18 @@ import '../../../bloc/contacts/contacts_cubit.dart';
 import '../../../core/bloc_utils/bloc_status.dart';
 import '../../../core/extensions/navigator_extension.dart';
 import '../../../services/contacts_sync_service.dart';
+import '../../core/platform.dart';
 
 class GoogleContactsImportScreen extends StatefulWidget {
   const GoogleContactsImportScreen({super.key});
 
   @override
-  State<GoogleContactsImportScreen> createState() => _GoogleContactsImportScreenState();
+  State<GoogleContactsImportScreen> createState() =>
+      _GoogleContactsImportScreenState();
 }
 
-class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen> {
+class _GoogleContactsImportScreenState
+    extends State<GoogleContactsImportScreen> {
   bool _isLoading = true;
   bool _permissionDenied = false;
   String? _errorMessage;
@@ -42,7 +45,8 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
     });
 
     try {
-      final existingContacts = context.read<ContactsCubit>().state.contacts ?? [];
+      final existingContacts =
+          context.read<ContactsCubit>().state.contacts ?? [];
       final deviceContacts = await ContactsSyncService.fetchDeviceContacts();
 
       final classified = ContactsSyncService.classifyContacts(
@@ -70,7 +74,8 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
       _filteredList = _classifiedList.where((item) {
         final name = (item.contact.name ?? '').toLowerCase();
         final phone = (item.contact.phone ?? '').toLowerCase();
-        final matchesQuery = query.isEmpty || name.contains(query) || phone.contains(query);
+        final matchesQuery =
+            query.isEmpty || name.contains(query) || phone.contains(query);
 
         if (!matchesQuery) return false;
 
@@ -85,10 +90,13 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
     });
   }
 
-  void _toggleSelectAll(bool select) {
+  bool _selectedAll = true;
+
+  toggleSelectedAll() {
     setState(() {
+      _selectedAll = !_selectedAll;
       for (final item in _filteredList) {
-        item.isSelected = select;
+        item.isSelected = _selectedAll;
       }
     });
   }
@@ -101,7 +109,9 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
 
     if (selected.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ကျေးဇူးပြု၍ အနည်းဆုံး လူစာရင်းတစ်ခု ရွေးချယ်ပေးပါ')),
+        const SnackBar(
+          content: Text('ကျေးဇူးပြု၍ အနည်းဆုံး လူစာရင်းတစ်ခု ရွေးချယ်ပေးပါ'),
+        ),
       );
       return;
     }
@@ -135,8 +145,12 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
   Widget build(BuildContext context) {
     final selectedCount = _classifiedList.where((c) => c.isSelected).length;
     final totalCount = _classifiedList.length;
-    final newCount = _classifiedList.where((c) => c.matchStatus == ContactMatchStatus.newContact).length;
-    final inContactsCount = _classifiedList.where((c) => c.matchStatus != ContactMatchStatus.newContact).length;
+    final newCount = _classifiedList
+        .where((c) => c.matchStatus == ContactMatchStatus.newContact)
+        .length;
+    final inContactsCount = _classifiedList
+        .where((c) => c.matchStatus != ContactMatchStatus.newContact)
+        .length;
 
     return BlocBuilder<ContactsCubit, ContactsState>(
       builder: (context, state) {
@@ -175,19 +189,30 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                     children: [
                       CircularProgressIndicator(),
                       SizedBox(height: 16),
-                      Text("Google နှင့် စက်ထဲရှိ ဖုန်းနံပါတ်များ ရှာဖွေနေပါသည်..."),
+                      Text(
+                        "Google နှင့် စက်ထဲရှိ ဖုန်းနံပါတ်များ ရှာဖွေနေပါသည်...",
+                      ),
                     ],
                   ),
                 )
               : _permissionDenied
-                  ? _buildPermissionDeniedView()
-                  : _errorMessage != null
-                      ? _buildErrorView()
-                      : _buildMainContent(totalCount, newCount, inContactsCount),
-          bottomNavigationBar: (!_isLoading && !_permissionDenied && _errorMessage == null)
+              ? _buildPermissionDeniedView()
+              : _errorMessage != null
+              ? _buildErrorView()
+              : _buildMainContent(
+                  totalCount,
+                  newCount,
+                  inContactsCount,
+                  context,
+                ),
+          bottomNavigationBar:
+              (!_isLoading && !_permissionDenied && _errorMessage == null)
               ? SafeArea(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: MediaQuery.of(context).size.width * 0.05,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       border: Border(
@@ -203,13 +228,20 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                             children: [
                               Text(
                                 "$selectedCount / $totalCount ရွေးထားသည်",
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
                               ),
                               Text(
-                                _mergeStrategy == 'skip' ? "ထပ်နေသူများကို ကျော်မည်" : "ရှိပြီးသားများတွင် အချက်အလက်ဖြည့်မည်",
+                                _mergeStrategy == 'skip'
+                                    ? "ထပ်နေသူများကို ကျော်မည်"
+                                    : "ရှိပြီးသားများတွင် အချက်အလက်ဖြည့်မည်",
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -218,18 +250,27 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
                         const SizedBox(width: 12),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
                           ),
-                          onPressed: (selectedCount == 0 || isImporting) ? null : _importSelected,
+                          onPressed: (selectedCount == 0 || isImporting)
+                              ? null
+                              : _importSelected,
                           icon: isImporting
                               ? const SizedBox(
                                   height: 16,
                                   width: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : const Icon(Icons.download_rounded, size: 18),
                           label: Text(
-                            isImporting ? "ထည့်သွင်းနေပါသည်..." : "စာရင်းသွင်းမည် ($selectedCount)",
+                            isImporting
+                                ? "ထည့်သွင်းနေပါသည်..."
+                                : "စာရင်းသွင်းမည် ($selectedCount)",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -243,206 +284,256 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
     );
   }
 
-  Widget _buildMainContent(int totalCount, int newCount, int inContactsCount) {
-    return Column(
-      children: [
-        // Top Card: Summary & Duplicate Action
-        Container(
-          padding: const EdgeInsets.all(12),
-          margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(90),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  _buildStatCard("စက်ထဲရှိဖုန်းများ", totalCount.toString(), Colors.blue, 'ALL'),
-                  const SizedBox(width: 8),
-                  _buildStatCard("စာရင်းသစ်များ", newCount.toString(), Colors.green, 'NEW'),
-                  const SizedBox(width: 8),
-                  _buildStatCard("ရှိပြီးသားစာရင်း", inContactsCount.toString(), Colors.orange, 'IN_CONTACTS'),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text(
-                    "ထပ်နေသူများအတွက်:",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 36,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(6),
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
-                      child: DropdownButton<String>(
-                        isDense: true,
-                        isExpanded: true,
-                        underline: const SizedBox(),
-                        value: _mergeStrategy,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'skip',
-                            child: Text(
-                              "ရှိပြီးသားများကို ကျော်မည်",
-                              style: TextStyle(fontSize: 12),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: 'overwrite',
-                            child: Text(
-                              "ရှိပြီးသားများတွင် ပြင်ဆင်/ဖြည့်စွက်မည်",
-                              style: TextStyle(fontSize: 12),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() => _mergeStrategy = val);
-                          }
-                        },
+  Widget _buildMainContent(
+    int totalCount,
+    int newCount,
+    int inContactsCount,
+    BuildContext context,
+  ) {
+    bool isWiderScreen =
+        MediaQuery.sizeOf(context).width > PlatformType.mobile.minWidth;
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: 8,
+        horizontal: MediaQuery.of(context).size.width * 0.05,
+      ),
+      child: Column(
+        children: [
+          // Top Card: Summary & Duplicate Action
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withAlpha(90),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    _buildStatCard(
+                      "စက်ထဲရှိဖုန်းများ",
+                      totalCount.toString(),
+                      Colors.blue,
+                      'ALL',
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStatCard(
+                      "စာရင်းသစ်များ",
+                      newCount.toString(),
+                      Colors.green,
+                      'NEW',
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStatCard(
+                      "ရှိပြီးသားစာရင်း",
+                      inContactsCount.toString(),
+                      Colors.orange,
+                      'IN_CONTACTS',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Text(
+                      "ထပ်နေသူများအတွက်:",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        // Search bar & Selection Toggles
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (_) => _applyFilters(),
-                  decoration: InputDecoration(
-                    hintText: "အမည် သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် ရှာရန်...",
-                    prefixIcon: const Icon(Icons.search, size: 20),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () {
-                              _searchController.clear();
-                              _applyFilters();
-                            },
-                          )
-                        : null,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
-                onPressed: () => _toggleSelectAll(true),
-                child: const Text("အားလုံးရွေးမည်", style: TextStyle(fontSize: 12)),
-              ),
-              const SizedBox(width: 4),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
-                onPressed: () => _toggleSelectAll(false),
-                child: const Text("အားလုံးဖြုတ်မည်", style: TextStyle(fontSize: 12)),
-              ),
-            ],
-          ),
-        ),
-
-        const Divider(height: 8),
-
-        // List
-        Expanded(
-          child: _filteredList.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
-                        const SizedBox(height: 12),
-                        Text(
-                          "ရှာဖွေမှုနှင့် ကိုက်ညီသော အဆက်အသွယ် မတွေ့ပါ",
-                          style: TextStyle(color: Colors.grey.shade600),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 36,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(6),
+                          color: Theme.of(context).colorScheme.surface,
                         ),
-                      ],
+                        child: DropdownButton<String>(
+                          isDense: true,
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          value: _mergeStrategy,
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'skip',
+                              child: Text(
+                                "ရှိပြီးသားများကို ကျော်မည်",
+                                style: TextStyle(fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'overwrite',
+                              child: Text(
+                                "ရှိပြီးသားများတွင် ပြင်ဆင်/ဖြည့်စွက်မည်",
+                                style: TextStyle(fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() => _mergeStrategy = val);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Search bar & Selection Toggles
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (_) => _applyFilters(),
+                    decoration: InputDecoration(
+                      hintText: "အမည် သို့မဟုတ် ဖုန်းနံပါတ်ဖြင့် ရှာရန်...",
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                _applyFilters();
+                              },
+                            )
+                          : null,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
-                )
-              : ListView.separated(
-                  itemCount: _filteredList.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final item = _filteredList[index];
-                    final contact = item.contact;
-                    final initial = _getInitial(contact.name);
-
-                    return CheckboxListTile(
-                      value: item.isSelected,
-                      dense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                      onChanged: (val) {
-                        setState(() {
-                          item.isSelected = val ?? false;
-                        });
-                      },
-                      title: Row(
+                ),
+                const SizedBox(width: 8),
+                isWiderScreen
+                    ? Row(
                         children: [
-                          Expanded(
-                            child: Text(
-                              contact.name ?? 'အမည်မရှိ',
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          Text("အားလုံးရွေးမည်"),
+                          Checkbox.adaptive(
+                            value: _selectedAll,
+                            onChanged: (value) => toggleSelectedAll(),
                           ),
-                          const SizedBox(width: 6),
-                          _buildMatchBadge(item.matchStatus),
+                        ],
+                      )
+                    : Checkbox.adaptive(
+                        semanticLabel: "အားလုံးရွေးမည်",
+                        value: _selectedAll,
+                        onChanged: (value) => toggleSelectedAll(),
+                      ),
+              ],
+            ),
+          ),
+
+          const Divider(height: 8),
+
+          // List
+          Expanded(
+            child: _filteredList.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 48,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "ရှာဖွေမှုနှင့် ကိုက်ညီသော အဆက်အသွယ် မတွေ့ပါ",
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
                         ],
                       ),
-                      subtitle: Text(
-                        contact.phone ?? 'ဖုန်းနံပါတ် မပါရှိပါ',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  )
+                : ListView.separated(
+                    itemCount: _filteredList.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final item = _filteredList[index];
+                      final contact = item.contact;
+                      final initial = _getInitial(contact.name);
+
+                      return CheckboxListTile(
+                        value: item.isSelected,
+                        dense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 2,
                         ),
-                      ),
-                      secondary: CircleAvatar(
-                        radius: 18,
-                        child: Text(
-                          initial,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        onChanged: (val) {
+                          setState(() {
+                            item.isSelected = val ?? false;
+                          });
+                        },
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                contact.name ?? 'အမည်မရှိ',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            _buildMatchBadge(item.matchStatus),
+                          ],
                         ),
-                      ),
-                    );
-                  },
-                ),
-        ),
-      ],
+                        subtitle: Text(
+                          contact.phone ?? 'ဖုန်းနံပါတ် မပါရှိပါ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        secondary: CircleAvatar(
+                          radius: 18,
+                          child: Text(
+                            initial,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildStatCard(String label, String count, Color color, String filterKey) {
+  Widget _buildStatCard(
+    String label,
+    String count,
+    Color color,
+    String filterKey,
+  ) {
     final isSelected = _filterType == filterKey;
 
     return Expanded(
@@ -468,12 +559,20 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
             children: [
               Text(
                 count,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: color),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 label,
-                style: TextStyle(fontSize: 11, color: color, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: color,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -495,7 +594,11 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
           ),
           child: Text(
             "ရှိပြီးသား",
-            style: TextStyle(fontSize: 10, color: Colors.orange.shade800, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.orange.shade800,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         );
       case ContactMatchStatus.nameOnlyMatch:
@@ -508,7 +611,11 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
           ),
           child: Text(
             "အမည်တူ",
-            style: TextStyle(fontSize: 10, color: Colors.blue.shade800, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.blue.shade800,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         );
       case ContactMatchStatus.newContact:
@@ -521,7 +628,11 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
           ),
           child: Text(
             "အသစ်",
-            style: TextStyle(fontSize: 10, color: Colors.green.shade800, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.green.shade800,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         );
     }
@@ -534,7 +645,11 @@ class _GoogleContactsImportScreenState extends State<GoogleContactsImportScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.no_accounts_outlined, size: 64, color: Colors.orange.shade600),
+            Icon(
+              Icons.no_accounts_outlined,
+              size: 64,
+              color: Colors.orange.shade600,
+            ),
             const SizedBox(height: 16),
             const Text(
               "ဖုန်းနံပါတ်များ ကြည့်ရှုခွင့် လိုအပ်ပါသည်",

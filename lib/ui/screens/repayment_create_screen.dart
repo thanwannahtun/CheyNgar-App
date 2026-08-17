@@ -58,7 +58,7 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text("New Repayment"),
+            title: Text("ပြန်ဆပ်မှု အသစ်"),
             leading: IconButton(
               onPressed: () => context.pop(),
               icon: Icon(Icons.close),
@@ -92,11 +92,13 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   spacing: 8,
                                   children: [
-                                    Text(
-                                      "စုစုပေါင်းပေးရန်ကျန်ငွေ",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
+                                    Expanded(
+                                      child: Text(
+                                        "စုစုပေါင်းပေးရန်ကျန်ငွေ",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium,
+                                      ),
                                     ),
                                     Text(
                                       "${state.transaction?.remainingPrincipal?.toCurrency ?? 0.0} Ks",
@@ -133,6 +135,7 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
                             ),
                             // date only picker
                             DatePickerFormField(
+                              firstDate: DateTime(DateTime.now().year - 10),
                               label: "ပြန်ဆပ်သည့်ရက်စွဲ",
                               value: _selectedDate,
                               onChanged: (date) {
@@ -202,7 +205,7 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
                               width: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text("Save"),
+                          : const Text("အတည်ပြုမည်"),
                     ),
                   ),
                 ],

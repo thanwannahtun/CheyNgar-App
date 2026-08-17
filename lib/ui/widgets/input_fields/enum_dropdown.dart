@@ -7,12 +7,14 @@ class EnumDropdown<T extends Enum> extends StatelessWidget {
   final String label;
   final List<T> items;
   // Optional: Pass an existing cubit the widget to look it up
+  final String Function(T value) displayName;
   final DropdownDataCubit<T>? cubit;
 
   const EnumDropdown({
     super.key,
     required this.label,
     required this.items,
+    required this.displayName,
     this.cubit,
   });
 
@@ -32,7 +34,7 @@ class EnumDropdown<T extends Enum> extends StatelessWidget {
                 (item) => DropdownMenuItem(
                   value: item,
                   child: Text(
-                    item.name.toUpperCase(),
+                    displayName(item),
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ),

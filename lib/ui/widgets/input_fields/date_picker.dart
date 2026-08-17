@@ -56,7 +56,7 @@ class _DatePickerFormFieldState extends State<DatePickerFormField> {
         context: context,
         initialDate: widget.value ?? DateTime.now(),
         firstDate: widget.firstDate ?? DateTime.now(),
-        lastDate: DateTime(DateTime.now().year + 10),
+        lastDate: DateTime(DateTime.now().year + 100),
       );
       if (picked != null && picked != widget.value) {
         widget.onChanged?.call(picked);
