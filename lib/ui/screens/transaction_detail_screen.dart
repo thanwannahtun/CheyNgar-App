@@ -45,36 +45,41 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       builder: (ctx) => Scaffold(
         appBar: AppBar(title: Text(title)),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: MediaQuery.sizeOf(context).width * 0.05,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (newStatus == TransactionStatus.writtenOff)
                 const Text(
-                  "ဤချေးငွေကို 'ကြွေးဆုံး' အဖြစ် သတ်မှတ်ပါက ကျန်ရှိသော အရင်းငွေကို အရှုံးစာရင်း (Bad Debt Expense) သို့ ထည့်သွင်းမည်ဖြစ်ပြီး အတိုးတွက်ချက်မှု ရပ်ဆိုင်းပါမည်။",
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                  "💡 ဤချေးငွေကို 'ကြွေးဆုံး' အဖြစ် သတ်မှတ်ပါက ကျန်ရှိသော အရင်းငွေကို အရှုံးစာရင်း (Bad Debt Expense) သို့ ထည့်သွင်းမည်ဖြစ်ပြီး အတိုးတွက်ချက်မှု ရပ်ဆိုင်းပါမည်။",
+                  style: TextStyle(fontSize: 13, color: Colors.amber),
                 ),
               if (newStatus == TransactionStatus.forgiven)
                 const Text(
-                  "ဤချေးငွေကို 'လျှော်ပေးသည်' အဖြစ် သတ်မှတ်ပါက ကြွေးမြီပယ်ဖျက်စာရင်း (Debt Forgiveness) သို့ ထည့်သွင်းမည်ဖြစ်ပြီး အတိုးတွက်ချက်မှု ရပ်ဆိုင်းပါမည်။",
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                  "💡 ဤချေးငွေကို 'လျှော်ပေးသည်' အဖြစ် သတ်မှတ်ပါက ကြွေးမြီပယ်ဖျက်စာရင်း (Debt Forgiveness) သို့ ထည့်သွင်းမည်ဖြစ်ပြီး အတိုးတွက်ချက်မှု ရပ်ဆိုင်းပါမည်။",
+                  style: TextStyle(fontSize: 13, color: Colors.amber),
                 ),
               if (newStatus == TransactionStatus.settled)
                 const Text(
-                  "ဤချေးငွေကို 'ရှင်းပြီး' အဖြစ်သို့ ထည့်သွင်းမည်ဖြစ်ပြီး အတိုးတွက်ချက်မှု ရပ်ဆိုင်းပါမည်။",
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                  "💡 ဤချေးငွေကို 'ရှင်းပြီး' အဖြစ်သို့ ထည့်သွင်းမည်ဖြစ်ပြီး အတိုးတွက်ချက်မှု ရပ်ဆိုင်းပါမည်။",
+                  style: TextStyle(fontSize: 13, color: Colors.amber),
                 ),
-              if (requireReason) const SizedBox(height: 12),
+              if (requireReason) const SizedBox(height: 24),
               if (requireReason)
                 TextField(
                   controller: reasonController,
                   decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
                     labelText: "အကြောင်းပြချက် / အကြောင်းရင်း (Reason)",
+                    alignLabelWithHint: true,
                     hintText:
                         "ဥပမာ- ဆုံးပါးသွားခြင်း၊ ထွက်ပြေးတိမ်းရှောင်ခြင်း၊ အခက်အခဲ",
                   ),
-                  maxLines: 2,
+                  maxLines: 5,
                 ),
             ],
           ),
@@ -88,16 +93,45 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 onPressed: () => Navigator.of(ctx).pop(),
                 child: const Text("မလုပ်တော့ပါ"),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  context.read<TransactionDetailCubit>().updateStatus(
-                    transactionId,
-                    status: newStatus,
-                    closureReason: reasonController.text.trim(),
+              BlocConsumer<TransactionDetailCubit, TransactionDetailState>(
+                builder: (BuildContext context, TransactionDetailState state) {
+                  final loading =
+                      state.statusChangeStatus == BlocStatus.loading;
+                  return ElevatedButton(
+                    onPressed: loading
+                        ? null
+                        : () {
+                            context.read<TransactionDetailCubit>().updateStatus(
+                              transactionId,
+                              status: newStatus,
+                              closureReason: reasonController.text.trim(),
+                            );
+                          },
+                    child: Row(
+                      children: [
+                        if (loading)
+                          const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          ),
+                        if (loading) const SizedBox(width: 8),
+                        Text(
+                          confirmButtonText,
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    ),
                   );
                 },
-                child: Text(confirmButtonText),
+                listener: (BuildContext context, TransactionDetailState state) {
+                  if (state.statusChangeStatus == BlocStatus.success) {
+                    Navigator.of(context).pop();
+                  }
+                },
               ),
             ],
           ),
@@ -277,7 +311,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             return Padding(
               padding: EdgeInsets.symmetric(
                 vertical: 12,
-                horizontal: MediaQuery.of(context).size.width * 0.04,
+                horizontal: MediaQuery.of(context).size.width * 0.05,
               ),
               child: RefreshIndicator.adaptive(
                 onRefresh: () async {
@@ -356,9 +390,6 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
                     // Primary Transaction Info Card
                     Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 8,
@@ -450,12 +481,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         (txn.collateralDescription != null &&
                             txn.collateralDescription!.isNotEmpty))
                       Card(
-                        margin: const EdgeInsets.only(top: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        // margin: const EdgeInsets.only(top: 8),
                         child: Padding(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(24),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -580,6 +608,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                           ),
                         );
                       }),
+
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   ],
                 ),
               ),

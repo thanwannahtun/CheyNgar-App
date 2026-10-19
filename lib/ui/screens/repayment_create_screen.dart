@@ -80,41 +80,32 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
                         child: Column(
                           spacing: 16,
                           children: [
-                            // ပေးရန်ကျန်ငွေ
-                            Card(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primaryContainer,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  spacing: 8,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        "စုစုပေါင်းပေးရန်ကျန်ငွေ",
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.titleMedium,
-                                      ),
-                                    ),
-                                    Text(
-                                      "${state.transaction?.remainingPrincipal?.toCurrency ?? 0.0} Ks",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onErrorContainer,
-                                          ),
-                                    ),
-                                  ],
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "စုစုပေါင်းပေးရန်ကျန်ငွေ",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  "${state.transaction?.remainingPrincipal?.toCurrency ?? 0.0} Ks",
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onErrorContainer,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
                             ),
+                            Divider(),
                             // amount number only
                             TextFormField(
                               controller: _amountController,

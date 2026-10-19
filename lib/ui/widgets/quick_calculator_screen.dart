@@ -80,27 +80,26 @@ class _InterestSimulatorScreenState extends State<InterestSimulatorScreen> {
             const SizedBox(height: 30),
 
             // 3. Result Display
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).focusColor,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                children: [
-                  _resultRow("ရက်ပေါင်း (Total Days)", "$diffDays ရက်"),
-                  const Divider(),
-                  _resultRow(
-                    "ကျသင့်အတိုး (Interest)",
-                    "${_format(accruedInterest)} MMK",
-                  ),
-                  const SizedBox(height: 10),
-                  _resultRow(
-                    "စုစုပေါင်း (Total)",
-                    "${_format(totalPayable)} MMK",
-                    isLarge: true,
-                  ),
-                ],
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    _resultRow("ရက်ပေါင်း (Total Days)", "$diffDays ရက်"),
+                    const Divider(),
+                    _resultRow(
+                      "ကျသင့်အတိုး (Interest)",
+                      "${_format(accruedInterest)} MMK",
+                    ),
+                    const SizedBox(height: 10),
+                    _resultRow(
+                      "စုစုပေါင်း (Total)",
+                      "${_format(totalPayable)} MMK",
+                      isLarge: true,
+                    ),
+                  ],
+                ),
               ),
             ),
 

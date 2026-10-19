@@ -124,9 +124,6 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                     itemBuilder: (context, index) {
                       final data = state.transactions![index];
                       return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                         child: Column(
                           children: [
                             ListTile(
@@ -157,7 +154,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                                   ),
                                   // status
                                   Text(
-                                    data.status?.name ?? "-",
+                                    data.status?.displayMM ?? "-",
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium
@@ -269,8 +266,12 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Transaction Filter",
-                          style: Theme.of(context).textTheme.titleLarge,
+                          "လုပ်ဆောင်မှု",
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                         TextButton.icon(
                           label: Row(
@@ -335,7 +336,7 @@ class _TransactionsListScreenState extends State<TransactionsListScreen> {
                     ),
 
                     EnumDropdown<TransactionStatus>(
-                      label: "Payment Status",
+                      label: "အခြေအနေ",
                       items: TransactionStatus.values,
                       displayName: (TransactionStatus value) => value.displayMM,
                     ),

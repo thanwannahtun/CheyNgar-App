@@ -38,7 +38,7 @@ class _AccountingScreenState extends State<AccountingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("စာရင်းကိုင်နှင့် ဂျာနယ် (Accounting)"),
+        title: const Text("စာရင်းကိုင်နှင့် ဂျာနယ်"),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -145,9 +145,6 @@ class _AccountingScreenState extends State<AccountingScreen>
 
             // P&L Overview Card
             Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -226,9 +223,6 @@ class _AccountingScreenState extends State<AccountingScreen>
 
             // Account Balances List
             Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -312,7 +306,10 @@ class _AccountingScreenState extends State<AccountingScreen>
         // Filter Chips Bar
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.03,
+            vertical: 8,
+          ),
           child: Row(
             children: [
               FilterChip(
@@ -373,7 +370,6 @@ class _AccountingScreenState extends State<AccountingScreen>
 
   Widget _buildJournalEntryCard(BuildContext context, JournalEntry entry) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(

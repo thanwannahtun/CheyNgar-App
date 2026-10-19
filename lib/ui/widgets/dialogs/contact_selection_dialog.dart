@@ -44,7 +44,7 @@ class _ContactSelectionDialogState extends State<ContactSelectionDialog> {
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
               ),
-              const Text("Select Contact"),
+              const Text("အဆက်အသွယ် ရွေးချယ်ရန်"),
             ],
           ),
           TextField(

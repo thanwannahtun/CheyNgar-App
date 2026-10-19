@@ -63,6 +63,10 @@ class AuthCubit extends Cubit<AuthState> {
   getProfile() async {
     emit(state.copyWith(status: BlocStatus.loading));
     try {
+      if (state.currentUser != null) {
+        emit(state.copyWith(status: BlocStatus.success));
+        return;
+      }
       final user = await _authRepo.getProfile();
       emit(state.copyWith(status: BlocStatus.success, currentUser: user));
     } catch (e) {

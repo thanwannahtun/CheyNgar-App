@@ -89,7 +89,9 @@ class AuthRepo extends ApiService {
       if (response.statusCode == 200) {
         return;
       }
-      throw Exception(response.data['message'] ?? 'PIN ပြောင်းလဲရာတွင် အမှားဖြစ်ပွားခဲ့သည်');
+      throw Exception(
+        response.data['message'] ?? 'PIN ပြောင်းလဲရာတွင် အမှားဖြစ်ပွားခဲ့သည်',
+      );
     } catch (e) {
       rethrow;
     }

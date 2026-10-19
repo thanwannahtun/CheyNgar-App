@@ -97,7 +97,7 @@ class Destination {
 const List<Destination> destinations = <Destination>[
   Destination(
     Icons.account_balance_wallet_outlined,
-    'စာရင်းကိုင်နှင့် ဂျာနယ် (Accounting)',
+    'စာရင်းကိုင်နှင့် ဂျာနယ်',
     Icons.account_balance_wallet_rounded,
     routeName: RouteNames.accounting,
   ),

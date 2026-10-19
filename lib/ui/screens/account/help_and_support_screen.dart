@@ -89,12 +89,7 @@ class HelpAndSupportScreen extends StatelessWidget {
     required Color color,
   }) {
     return Card(
-      elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: color.withAlpha(50)),
-      ),
       child: ListTile(
         leading: Icon(icon, color: color),
         title: Text(

@@ -15,10 +15,7 @@ class UserProfileCubit extends Cubit<UserProfileState> {
   Future<void> fetchUserProfile() async {
     try {
       emit(state.copyWith(status: BlocStatus.loading));
-      await Future.delayed(const Duration(seconds: 1)); // Simulate delay
-
       final user = await _usersRepo.getProfile();
-
       emit(state.copyWith(status: BlocStatus.success, user: user));
     } on Exception catch (e) {
       emit(

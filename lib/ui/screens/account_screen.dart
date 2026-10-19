@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../core/bloc_utils/bloc_status.dart';
 import '../../core/route_util/route_names.dart';
+import '../../core/widgets/heart_break_dialog.dart';
 import '../../models/user.dart';
 import '../widgets/dialogs/change_pin_dialog.dart';
 import '../widgets/powered_by_naya.dart';
@@ -47,27 +48,20 @@ class _AccountScreenState extends State<AccountScreen> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (dialogCtx) => AlertDialog.adaptive(
-                  title: const Text('အကောင့်မှ ထွက်မည်လား?'),
-                  content: const Text('အကောင့်မှထွက်မည်မှာ သေချာပါသလား?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(dialogCtx),
-                      child: const Text('မထွက်ပါ'),
-                    ),
-                    FilledButton(
-                      onPressed: () {
-                        Navigator.pop(dialogCtx);
-                        context.read<AuthCubit>().logout();
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          RouteNames.loginScreen,
-                          (route) => false,
-                        );
-                      },
-                      child: const Text('ထွက်မည်'),
-                    ),
-                  ],
+                builder: (dialogCtx) => HeartbreakDialog(
+                  title: 'Logout',
+                  quote: 'ပြန်လာမယ် ပြောခဲ့တာတောင် ယုံခဲ့မိသေးတာပဲ 🥹',
+                  stayText: 'ဆက်ချစ်ပေးဦးမယ် ❤️',
+                  exitText: 'စိမ်းကားလိုက်ပြီ ❄️',
+                  onExitConfirmed: () {
+                    // Execute your actual exit logic cleanly here
+                    context.read<AuthCubit>().logout();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      RouteNames.loginScreen,
+                      (route) => false,
+                    );
+                  },
                 ),
               );
             },

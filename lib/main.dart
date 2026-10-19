@@ -9,6 +9,7 @@ import 'bloc/theme_mode/theme_mode_cubit.dart';
 import 'bloc/transaction_detail/transaction_detail_cubit.dart';
 import 'bloc/transactions/transactions_cubit.dart';
 import 'bloc/user_profile/user_profile_cubit.dart';
+import 'core/app_theme_data.dart';
 import 'core/bloc_utils/app_bloc_observer.dart';
 import 'core/route_util/route_generator.dart';
 import 'core/route_util/route_names.dart';
@@ -77,8 +78,8 @@ class MyApp extends StatelessWidget {
             title: 'အချေးအငှား',
             navigatorKey: navigatorKey,
             themeMode: state,
-            theme: buildLightTheme(),
-            darkTheme: buildDarkTheme(),
+            theme: AppThemeData.buildLightTheme(),
+            darkTheme: AppThemeData.buildDarkTheme(),
             onGenerateRoute: RouteGenerator.onGenerateRoute,
             initialRoute: RouteNames.splashScreen,
             debugShowCheckedModeBanner: false,
@@ -87,46 +88,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-ThemeData buildDarkTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.green,
-    brightness: Brightness.dark,
-  );
-
-  return ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: colorScheme,
-    textTheme: TextTheme(
-      titleLarge: TextStyle(color: colorScheme.primary),
-    ),
-    fontFamily: "Pyidaungsu",
-    appBarTheme: const AppBarTheme(
-      iconTheme: IconThemeData(size: 15),
-      titleTextStyle: TextStyle(fontSize: 14),
-    ),
-    snackBarTheme: const SnackBarThemeData(
-      backgroundColor: Colors.black87,
-      contentTextStyle: TextStyle(color: Colors.green),
-    ),
-  );
-}
-
-ThemeData buildLightTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.green,
-    brightness: Brightness.light,
-  );
-  return ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
-    colorScheme: colorScheme,
-    textTheme: TextTheme(
-      titleLarge: TextStyle(color: colorScheme.primary),
-    ),
-    fontFamily: "Pyidaungsu",
-    appBarTheme: const AppBarTheme(iconTheme: IconThemeData(size: 15)),
-  );
 }

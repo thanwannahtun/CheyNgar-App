@@ -2,6 +2,7 @@ import 'package:chey_ngar/models/transactions.dart';
 import 'package:chey_ngar/ui/screens/contacts_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'core/route_util/route_names.dart';
+import 'core/widgets/confirm_exit_wrapper.dart';
 import 'ui/screens/accounting_screen.dart';
 import 'ui/screens/transactions_list_screen.dart';
 import 'ui/widgets/app_drawer.dart';
@@ -15,6 +16,26 @@ class CheyNgarApplication extends StatefulWidget {
 }
 
 class _CheyNgarApplicationState extends State<CheyNgarApplication> {
+  ConfirmExitWrapperState? _confirmExitState;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _confirmExitState = ConfirmExitWrapper.of(context);
+    _confirmExitState?.setCustomPopHandler(_handlePop);
+  }
+
+  @override
+  void dispose() {
+    _confirmExitState?.setCustomPopHandler(null);
+    _confirmExitState = null;
+    super.dispose();
+  }
+
+  bool _handlePop() {
+    return false; // Already on DashboardScreen: allow confirm exit dialog to show
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +61,23 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
         ],
         actionsPadding: EdgeInsets.symmetric(
           horizontal: MediaQuery.of(context).size.width * 0.05,
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        height: 50,
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: Center(
+          child: Text(
+            'Version 1.0.0',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -131,7 +169,8 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const InterestSimulatorScreen(),
+                            builder: (context) =>
+                                const InterestSimulatorScreen(),
                           ),
                         );
                       },
@@ -142,21 +181,25 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
             ),
             const SizedBox(height: 4),
             // Accounting & Double-Entry Ledger Card
-            Card(
-              child: _reportCard(
-                context,
-                title: "စာရင်းကိုင်နှင့် ဂျာနယ် (Accounting)",
-                subtitle: "ဒက်ဘစ်/ခရက်ဒစ် စာရင်း၊ ဘဏ္ဍာရေး အနှစ်ချုပ်နှင့် အမြတ်/အရှုံး",
-                icon: Icons.account_balance_wallet_rounded,
-                color: Colors.teal,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AccountingScreen(),
-                    ),
-                  );
-                },
+            SizedBox(
+              width: double.infinity,
+              child: Card(
+                child: _reportCard(
+                  context,
+                  title: "စာရင်းကိုင်နှင့် ဂျာနယ်",
+                  subtitle:
+                      "ဒက်ဘစ်/ခရက်ဒစ် စာရင်း၊ ဘဏ္ဍာရေး အနှစ်ချုပ်နှင့် အမြတ်/အရှုံး",
+                  icon: Icons.account_balance_wallet_rounded,
+                  color: Colors.teal,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountingScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -175,6 +218,7 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
     VoidCallback? onTap,
   }) {
     return InkWell(
+      highlightColor: Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Padding(

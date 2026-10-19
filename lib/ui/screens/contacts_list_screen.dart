@@ -330,7 +330,7 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          "စုစုပေါင်း ${filteredContacts.length} ယောက်တွေ့ပါသည်",
+                          "စုစုပေါင်း ${filteredContacts.length} ယောက်",
                           // "စုစုပေါင်း ${allContacts.length} ယောက်အနက် ${filteredContacts.length} ယောက်တွေ့ပါသည်",
                           style: TextStyle(
                             fontSize: 12,
@@ -411,10 +411,6 @@ class _ContactsListScreenState extends State<ContactsListScreen> {
                               final type = contact.contactType ?? 'Manual';
 
                               return Card(
-                                elevation: 1.5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
                                 child: ListTile(
                                   title: Row(
                                     children: [

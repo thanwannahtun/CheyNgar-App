@@ -9,6 +9,7 @@ import '../../ui/screens/need_custom_app_screen.dart';
 import '../../ui/screens/pin_auth_screen.dart';
 import '../../ui/screens/privacy_screen.dart';
 import '../../ui/screens/splash_screen.dart';
+import '../widgets/confirm_exit_wrapper.dart';
 import 'route_names.dart';
 
 class RouteGenerator {
@@ -26,7 +27,7 @@ class RouteGenerator {
         return _navigateRoute(
           settings: settings,
           builder: (context) {
-            return const CheyNgarApplication();
+            return ConfirmExitWrapper(child: const CheyNgarApplication());
           },
         );
       case RouteNames.loginScreen:

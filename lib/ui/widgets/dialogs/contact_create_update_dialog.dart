@@ -63,7 +63,9 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              widget.initial != null ? "လူစာရင်း အချက်အလက်ပြင်ရန်" : "လူသစ်ထည့်ရန်",
+              widget.initial != null
+                  ? "လူစာရင်း အချက်အလက်ပြင်ရန်"
+                  : "လူသစ်ထည့်ရန်",
             ),
             leading: IconButton(
               onPressed: () => context.pop(),
@@ -150,10 +152,22 @@ class _ContactCreateUpdateDialogState extends State<ContactCreateUpdateDialog> {
                             prefixIcon: Icon(Icons.category_outlined),
                           ),
                           items: const [
-                            DropdownMenuItem(value: 'Manual', child: Text("ကိုယ်တိုင်ထည့်သွင်းမှု")),
-                            DropdownMenuItem(value: 'Google', child: Text("Google အဆက်အသွယ်")),
-                            DropdownMenuItem(value: 'Internal', child: Text("အက်ပ်အတွင်းစာရင်း")),
-                            DropdownMenuItem(value: 'Imported', child: Text("ဖိုင်မှသွင်းထားမှု")),
+                            DropdownMenuItem(
+                              value: 'Manual',
+                              child: Text("ကိုယ်တိုင်ထည့်သွင်းမှု"),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Google',
+                              child: Text("Google အဆက်အသွယ်"),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Internal',
+                              child: Text("အက်ပ်အတွင်းစာရင်း"),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Imported',
+                              child: Text("ဖိုင်မှသွင်းထားမှု"),
+                            ),
                           ],
                           onChanged: isLoading
                               ? null
