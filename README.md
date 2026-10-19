@@ -127,8 +127,36 @@ lib/
 │   ├── repayment.dart                # Repayment entity
 │   └── transactions.dart             # Transaction entity with status & collateral
 ├── repositories/                     # API repositories
+├── services/                         # Background & platform services
+│   ├── contacts_sync_service.dart    # Device contacts sync
+│   ├── email_service.dart            # Email notifications
+│   └── receipt_pdf_service.dart      # PDF receipt voucher generation & POS printing
 ├── ui/
-│   ├── screens/                      # UI Screens (Accounting, Details, Create, Contacts)
+│   ├── screens/                      # UI Screens (Accounting, Details, Create, Receipts)
 │   └── widgets/                      # Reusable form fields, dialogs, and cards
 └── main.dart                         # App initialization & MultiBlocProvider
 ```
+
+---
+
+## 🧾 9. Repayment Record Voucher & POS Printing ("ပြေစာသိမ်းမည်")
+
+To ensure transparency, accountability, and seamless communication between lenders and borrowers, CheyNgar includes a minimalist repayment receipt voucher system:
+
+### Key Highlights:
+1. **Automatic Voucher Presentation**:
+   - Immediately upon submitting a successful repayment in `RepaymentCreateScreen`, the app automatically navigates to the **Repayment Receipt Voucher** screen (`RepaymentReceiptScreen`).
+2. **Dual Printing Formats & Font Rendering**:
+   - **Flawless Printed Typography**: Uses `ZAWGYI-ONE_V3.1.TTF` powered by a built-in Rabbit converter (`Rabbit.uni2zg`) for physical printing and PDF export, ensuring zero broken vowels, misplaced medials, or un-shaped glyphs on thermal and standard printers. The app UI retains pure Unicode (`Pyidaungsu`).
+   - **CheyNgar Brand Logo**: Embedded directly in the voucher header on both mobile preview and printed copies.
+   - **Compact Thermal Margins**: Margins and vertical spacing are tightly configured (50% reduction in white space) to save continuous paper on cheap 80mm/58mm portable POS thermal printers.
+   - **Standard A4 Sheet**: Neatly centered, compact voucher card suitable for home and office printers.
+3. **Save to Downloads & Direct File Sharing**:
+   - 🖨️ **Print Voucher**: Direct wireless or USB printing via standard OS print dialog.
+   - 💾 **Save to Visible Downloads**: Directly saves `.pdf` files into the device's public **Downloads** directory (`/storage/emulated/0/Download` on Android or user Downloads on Desktop) for instant access.
+   - 📤 **Direct File Sharing**: Shares the generated `.pdf` file directly to messaging and social platforms (Telegram, Viber, WhatsApp, Messenger, Gmail) without dumping text.
+   - 📋 **Quick Text Copy**: Dedicated AppBar copy action for instant clipboard text copying when sending via SMS.
+4. **Voucher History from Transaction Details**:
+   - In `TransactionDetailScreen`, each repayment record is displayed as a clean minimalist card with strict overflow guards (`Expanded`, `maxLines: 1`, and `TextOverflow.ellipsis`).
+   - Tapping any repayment record immediately opens its official printable/shareable voucher.
+

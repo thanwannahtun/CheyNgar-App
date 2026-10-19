@@ -7,6 +7,7 @@ import '../../../core/bloc_utils/bloc_status.dart';
 import '../../bloc/transaction_detail/transaction_detail_cubit.dart';
 import '../../models/repayment.dart';
 import '../widgets/input_fields/date_picker.dart';
+import 'repayment_receipt_screen.dart';
 
 class RepaymentCreateScreen extends StatefulWidget {
   const RepaymentCreateScreen({super.key});
@@ -42,10 +43,23 @@ class _RepaymentCreateScreenState extends State<RepaymentCreateScreen> {
       listenWhen: (prev, curr) => prev.crudStatus != curr.crudStatus,
       listener: (context, state) {
         if (state.crudStatus == BlocStatus.success) {
+          final createdRepayment = state.repayment;
+          final currentTransaction = state.transaction;
+          final cubit = context.read<TransactionDetailCubit>();
+
           Navigator.of(context).pop();
-          context.read<TransactionDetailCubit>().fetchTransactionDetail(
-            context.read<TransactionDetailCubit>().state.transaction?.id ?? 0,
-          );
+
+          if (currentTransaction != null && createdRepayment != null) {
+            cubit.fetchTransactionDetail(currentTransaction.id ?? 0);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => RepaymentReceiptScreen(
+                  repayment: createdRepayment,
+                  transaction: currentTransaction,
+                ),
+              ),
+            );
+          }
         }
         if (state.crudStatus == BlocStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(

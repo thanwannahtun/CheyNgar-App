@@ -9,6 +9,7 @@ import '../widgets/error_message.dart';
 import '../widgets/loading.dart';
 import '../widgets/no_data.dart';
 import 'repayment_create_screen.dart';
+import 'repayment_receipt_screen.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   const TransactionDetailScreen({super.key, required this.transactionId});
@@ -570,41 +571,158 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     if ((txn.repayments ?? []).isNotEmpty)
                       ...List.generate(txn.repayments!.length, (index) {
                         final repayment = txn.repayments![index];
+                        final hasNote =
+                            repayment.note != null &&
+                            repayment.note!.trim().isNotEmpty;
+                        final dateStr = repayment.paymentDate != null
+                            ? DateTimeUtil.formatDate(repayment.paymentDate!)
+                            : "-";
+
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 4),
-                          child: ListTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  repayment.amountPaid?.toCurrency ?? "-",
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w600),
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => RepaymentReceiptScreen(
+                                    repayment: repayment,
+                                    transaction: txn,
+                                  ),
                                 ),
-                                Text(
-                                  repayment.paymentDate != null
-                                      ? DateTimeUtil.formatDate(
-                                          repayment.paymentDate!,
-                                        )
-                                      : "-",
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                            subtitle:
-                                (repayment.note != null &&
-                                    repayment.note!.isNotEmpty)
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      repayment.note!,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[700],
-                                      ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Leading Receipt Icon Badge
+                                  Container(
+                                    padding: const EdgeInsets.all(9),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary.withAlpha(25),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                  )
-                                : null,
+                                    child: Icon(
+                                      Icons.receipt_long_rounded,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+
+                                  // Middle Information Column (Guarded against text overflow)
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                "${repayment.amountPaid?.toCurrency ?? "-"} Ks",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Theme.of(
+                                                        context,
+                                                      ).colorScheme.primary,
+                                                    ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              dateStr,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                    fontSize: 11,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        if (hasNote) ...[
+                                          const SizedBox(height: 3),
+                                          Text(
+                                            repayment.note!.trim(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                                  fontSize: 11.5,
+                                                ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 10),
+
+                                  // Trailing "ပြေစာ" Pill
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerHighest
+                                          .withAlpha(120),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.receipt_outlined,
+                                          size: 13,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                        ),
+                                        const SizedBox(width: 3),
+                                        Text(
+                                          "ပြေစာ",
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       }),
