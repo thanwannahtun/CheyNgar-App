@@ -12,6 +12,7 @@ class ErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final width = MediaQuery.of(context).size.width;
 
     final isMobile = PlatformType.isMobile(context);
@@ -27,7 +28,7 @@ class ErrorMessage extends StatelessWidget {
                 'assets/lottie/not-found.json',
                 height: width * 0.5,
                 fit: BoxFit.contain,
-                width: width * 0.5,
+                width: width,
               ).expanded(flex: 5),
 
               Text(
@@ -35,7 +36,7 @@ class ErrorMessage extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 3,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
               ),
               if (onRetry != null)
@@ -43,9 +44,28 @@ class ErrorMessage extends StatelessWidget {
                   width: width * 0.5,
                   child: ListTile(
                     title: TextButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: theme.colorScheme.errorContainer,
+                        foregroundColor: theme.colorScheme.onErrorContainer,
+                        textStyle: const TextStyle(
+                          fontFamily: "Pyidaungsu",
+                          fontWeight: FontWeight.w500,
+                        ),
+                        elevation: 0,
+                      ),
                       onPressed: onRetry,
                       icon: Icon(Icons.refresh),
-                      label: Text("Refresh"),
+                      label: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "ပြန်လည်ကြိုးစားမည်",
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ).expanded(),
@@ -69,7 +89,7 @@ class ErrorMessage extends StatelessWidget {
                       message,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.onErrorContainer,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -79,7 +99,26 @@ class ErrorMessage extends StatelessWidget {
                         child: TextButton.icon(
                           onPressed: onRetry,
                           icon: const Icon(Icons.refresh),
-                          label: const Text("Refresh"),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: theme.colorScheme.errorContainer,
+                            foregroundColor: theme.colorScheme.onErrorContainer,
+                            textStyle: const TextStyle(
+                              fontFamily: "Pyidaungsu",
+                              fontWeight: FontWeight.w500,
+                            ),
+                            elevation: 0,
+                          ),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "ပြန်လည်ကြိုးစားမည်",
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                   ],

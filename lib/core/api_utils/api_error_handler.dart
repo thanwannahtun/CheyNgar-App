@@ -37,8 +37,7 @@ class ApiErrorHandler {
           );
         case DioExceptionType.connectionError:
           return _NetworkException(
-            error.response?.data['message'] ??
-                "Failed to connect to the API server. Please check your internet connection.",
+            error.response?.data['message'] ?? "အင်တာနက်ပြတ်တောက်နေပါသည်",
           );
         case DioExceptionType.badResponse:
           return _handleHttpResponse(error);

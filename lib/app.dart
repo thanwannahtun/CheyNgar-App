@@ -69,7 +69,7 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Center(
           child: Text(
-            'Version 1.0.0',
+            'Version 1.0.0+1',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,

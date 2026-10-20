@@ -25,6 +25,9 @@ class ConfirmExitWrapperState extends State<ConfirmExitWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -42,15 +45,58 @@ class ConfirmExitWrapperState extends State<ConfirmExitWrapper> {
           builder: (context) {
             return AlertDialog(
               title: const Text("Exit App"),
-              content: const Text("တကယ် ထားရစ်ခဲ့တော့မှာလား အသည်းရယ် 🥹"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text("မခွဲနိုင်သေးဘူး 😭"),
+              content: Text(
+                "တကယ် ထားရစ်ခဲ့တော့မှာလား အသည်းရယ် 🥹",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontSize: 16,
+                  fontFamily: "Pyidaungsu",
+                  // Adapts gracefully: slightly brighter pink in dark mode for contrast
+                  color: isDark
+                      ? const Color(0xFFFF69B4)
+                      : const Color(0xFFD81B60),
                 ),
-                FilledButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text("သွားတော့မယ် 🚶‍♂️"),
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  spacing: 16,
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        style: TextButton.styleFrom(
+                          foregroundColor: theme.colorScheme.primary,
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontFamily: "Pyidaungsu",
+                          ),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: const Text("မခွဲနိုင်သေးဘူး 😭"),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: theme.colorScheme.errorContainer,
+                          foregroundColor: theme.colorScheme.onErrorContainer,
+                          textStyle: const TextStyle(
+                            fontFamily: "Pyidaungsu",
+                            fontWeight: FontWeight.w500,
+                          ),
+                          elevation: 0,
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: const Text("သွားတော့မယ်"),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             );
