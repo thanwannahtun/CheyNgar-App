@@ -8,11 +8,14 @@ import 'bloc/contacts/contacts_cubit.dart';
 import 'bloc/theme_mode/theme_mode_cubit.dart';
 import 'bloc/transaction_detail/transaction_detail_cubit.dart';
 import 'bloc/transactions/transactions_cubit.dart';
+import 'bloc/update/app_update_cubit.dart';
 import 'bloc/user_profile/user_profile_cubit.dart';
 import 'core/app_theme_data.dart';
 import 'core/bloc_utils/app_bloc_observer.dart';
 import 'core/route_util/route_generator.dart';
 import 'core/route_util/route_names.dart';
+import 'core/secure_storage_service.dart';
+import 'core/update/app_update.dart';
 import 'repositories/accounting_repo.dart';
 import 'repositories/auth_repo.dart';
 import 'repositories/contacts_repo.dart';
@@ -35,6 +38,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Reuse the app's existing SecureStorageService for persisting update check timestamps.
+    final storage = SecureStorageService.instance;
+
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AuthRepo>(create: (context) => AuthRepo()),
@@ -44,6 +50,23 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider<AccountingRepo>(
           create: (context) => AccountingRepo(),
+        ),
+
+        // ── App Update Service ────────────────────────────────────────────────
+        // Decoupled via AppUpdateServiceInterface. Config values drive all
+        // GitHub endpoints — no hardcoded URLs anywhere in the UI layer.
+        RepositoryProvider<AppUpdateServiceInterface>(
+          create: (_) => GithubAppUpdateService(
+            config: UpdateConfig(
+              githubOwner: 'thanwannahtun',
+              githubRepo: 'CheyNgar-App',
+              destinationFilename: 'CheyNgar-latest.apk',
+            ),
+            storage: RepositoryUpdateStorage(
+              reader: (key) => storage.read(key),
+              writer: (key, val) => storage.write(key, val),
+            ),
+          ),
         ),
       ],
 
@@ -71,6 +94,15 @@ class MyApp extends StatelessWidget {
           BlocProvider<ThemeModeCubit>(
             create: (BuildContext context) =>
                 ThemeModeCubit(ThemeMode.system)..init(),
+          ),
+
+          // ── App Update Cubit ────────────────────────────────────────────────
+          // Calls init() immediately: reads dynamic package version + runs
+          // a silent weekly background check if 7 days have elapsed.
+          BlocProvider<AppUpdateCubit>(
+            create: (ctx) => AppUpdateCubit(
+              updateService: ctx.read<AppUpdateServiceInterface>(),
+            )..init(),
           ),
         ],
         child: BlocBuilder<ThemeModeCubit, ThemeMode>(

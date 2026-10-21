@@ -1,7 +1,13 @@
 import 'package:chey_ngar/models/transactions.dart';
 import 'package:chey_ngar/ui/screens/contacts_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'bloc/update/app_update_cubit.dart';
+import 'bloc/update/app_update_state.dart';
 import 'core/route_util/route_names.dart';
+import 'core/update/ui/update_badge.dart';
+import 'core/update/ui/update_dialog.dart';
 import 'core/widgets/confirm_exit_wrapper.dart';
 import 'ui/screens/accounting_screen.dart';
 import 'ui/screens/transactions_list_screen.dart';
@@ -63,23 +69,7 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
           horizontal: MediaQuery.of(context).size.width * 0.05,
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 0,
-        height: 50,
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: Center(
-          child: Text(
-            'Version 1.0.0+1',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
+      bottomNavigationBar: _AppUpdateFooter(),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           vertical: 16,
@@ -247,6 +237,122 @@ class _CheyNgarApplicationState extends State<CheyNgarApplication> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Footer bar that shows the dynamic app version with an update badge.
+///
+/// - On tap: triggers a manual update check.
+/// - A `BlocListener` reacts to state changes:
+///   - [AppUpdateStatus.upToDate] → shows a brief "Up to date" snackbar.
+///   - [AppUpdateStatus.updateAvailable] → shows the [UpdateDialog].
+///   - [AppUpdateStatus.error] → shows an error snackbar.
+class _AppUpdateFooter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AppUpdateCubit, AppUpdateState>(
+      // Only rebuild the listener when a manual check finishes
+      listenWhen: (prev, curr) =>
+          curr.isManualCheck &&
+          prev.status != curr.status &&
+          (curr.status == AppUpdateStatus.upToDate ||
+              curr.status == AppUpdateStatus.updateAvailable ||
+              curr.status == AppUpdateStatus.error),
+      listener: (context, state) {
+        switch (state.status) {
+          case AppUpdateStatus.upToDate:
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Version ${state.currentVersion.versionWithBuild} သည် နောက်ဆုံး version ဖြစ်သည်။',
+                  ),
+                  duration: const Duration(seconds: 3),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            break;
+          case AppUpdateStatus.updateAvailable:
+            UpdateDialog.show(context);
+            break;
+          case AppUpdateStatus.error:
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.errorMessage ?? 'Update check failed. Please try again.',
+                  ),
+                  duration: const Duration(seconds: 4),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            break;
+          default:
+            break;
+        }
+      },
+      buildWhen: (prev, curr) =>
+          prev.status != curr.status ||
+          prev.currentVersion != curr.currentVersion ||
+          prev.hasUpdateAvailable != curr.hasUpdateAvailable,
+      builder: (context, state) {
+        final version = state.currentVersion.version.isNotEmpty
+            ? 'Version ${state.currentVersion.versionWithBuild}'
+            : 'Version …';
+
+        final isChecking = state.status == AppUpdateStatus.checking;
+
+        return BottomAppBar(
+          elevation: 0,
+          height: 50,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Center(
+            child: GestureDetector(
+              onTap: isChecking
+                  ? null
+                  : () => context
+                      .read<AppUpdateCubit>()
+                      .checkForUpdates(force: true),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 6,
+                children: [
+                  if (isChecking)
+                    SizedBox(
+                      width: 11,
+                      height: 11,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  Text(
+                    isChecking ? 'Checking…' : version,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Mini badge: shown when an update is available
+                  if (state.hasUpdateAvailable)
+                    UpdateBadge(
+                      label: state.latestVersion != null
+                          ? 'v${state.latestVersion}'
+                          : 'UPDATE',
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

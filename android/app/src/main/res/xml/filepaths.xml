@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FileProvider paths for ota_update package.
+  The authority "${applicationId}.ota_update_provider" is declared in AndroidManifest.xml.
+  This file grants the Android Package Installer temporary read access to downloaded APK files
+  stored in the app's private internal storage under the "ota_update/" subdirectory.
+-->
+<paths>
+    <files-path name="internal_apk_storage" path="ota_update/" />
+</paths>
