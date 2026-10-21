@@ -10,8 +10,7 @@ class AppUpdateCubit extends Cubit<AppUpdateState> {
   final AppUpdateServiceInterface updateService;
   StreamSubscription<AppUpdateProgress>? _downloadSub;
 
-  AppUpdateCubit({required this.updateService})
-      : super(const AppUpdateState());
+  AppUpdateCubit({required this.updateService}) : super(const AppUpdateState());
 
   /// Initializes the cubit by dynamically retrieving the installed app version
   /// and running a non-intrusive periodic background check if 7 days have passed.
@@ -58,7 +57,8 @@ class AppUpdateCubit extends Cubit<AppUpdateState> {
       } else if (result.error != null) {
         emit(
           state.copyWith(
-            status: force ? AppUpdateStatus.error : state.status,
+            status: AppUpdateStatus.error,
+            // status: force ? AppUpdateStatus.error : state.status,
             currentVersion: result.currentVersion,
             errorMessage: result.error,
             isManualCheck: force,
@@ -113,53 +113,55 @@ class AppUpdateCubit extends Cubit<AppUpdateState> {
 
     _downloadSub = updateService
         .downloadLatestAPK(
-      apkUrl,
-      destinationFilename: state.updateInfo?.apkFileName,
-    )
+          apkUrl,
+          destinationFilename: state.updateInfo?.apkFileName,
+        )
         .listen(
-      (progress) {
-        if (progress.isDownloading) {
-          emit(
-            state.copyWith(
-              status: AppUpdateStatus.downloading,
-              downloadPercentage: progress.percentage,
-              downloadMessage: progress.message,
-            ),
-          );
-        } else if (progress.isInstalling) {
-          emit(
-            state.copyWith(
-              status: AppUpdateStatus.installing,
-              downloadPercentage: 100,
-              downloadMessage: progress.message ?? 'Launching installer...',
-            ),
-          );
-        } else if (progress.isCompleted) {
-          emit(
-            state.copyWith(
-              status: AppUpdateStatus.installationDone,
-              downloadPercentage: 100,
-              downloadMessage: 'Installation package launched.',
-            ),
-          );
-        } else if (progress.hasError) {
-          emit(
-            state.copyWith(
-              status: AppUpdateStatus.error,
-              errorMessage: progress.message ?? 'Failed to download or install update.',
-            ),
-          );
-        }
-      },
-      onError: (err) {
-        emit(
-          state.copyWith(
-            status: AppUpdateStatus.error,
-            errorMessage: 'Download error: $err',
-          ),
+          (progress) {
+            if (progress.isDownloading) {
+              emit(
+                state.copyWith(
+                  status: AppUpdateStatus.downloading,
+                  downloadPercentage: progress.percentage,
+                  downloadMessage: progress.message,
+                ),
+              );
+            } else if (progress.isInstalling) {
+              emit(
+                state.copyWith(
+                  status: AppUpdateStatus.installing,
+                  downloadPercentage: 100,
+                  downloadMessage: progress.message ?? 'Launching installer...',
+                ),
+              );
+            } else if (progress.isCompleted) {
+              emit(
+                state.copyWith(
+                  status: AppUpdateStatus.installationDone,
+                  downloadPercentage: 100,
+                  downloadMessage: 'Installation package launched.',
+                ),
+              );
+            } else if (progress.hasError) {
+              emit(
+                state.copyWith(
+                  status: AppUpdateStatus.error,
+                  errorMessage:
+                      progress.message ??
+                      'Failed to download or install update.',
+                ),
+              );
+            }
+          },
+          onError: (err) {
+            emit(
+              state.copyWith(
+                status: AppUpdateStatus.error,
+                errorMessage: 'Download error: $err',
+              ),
+            );
+          },
         );
-      },
-    );
   }
 
   /// Opens the release or web page in external browser.

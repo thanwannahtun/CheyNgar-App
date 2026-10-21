@@ -85,8 +85,9 @@ Accessible from the Home Dashboard and Drawer Navigation, the **Accounting Modul
 
 ### Tab 1: Financial Summary (ဘဏ္ဍာရေး အနှစ်ချုပ်)
 - **Trial Balance Health**: Live indicator validating that Total Debits ($Dr$) match Total Credits ($Cr$).
-- **Profit & Loss (P&L)**:
-  $$\text{Net P&L} = \text{Interest Income} - (\text{Interest Expense} + \text{Bad Debt Loss} + \text{Forgiven Debt})$$
+- **Profit & Loss (P&L)**: 
+  $$\text{Net P\&L} = \text{Interest Income} - (\text{Interest Expense} + \text{Bad Debt Loss} + \text{Forgiven Debt})$$
+
 - **Chart of Accounts**: Visual balances for Cash/Bank (`1000`), Loans Receivable (`1100`), Loans Payable (`2000`), Interest Income (`4000`), Interest Expense (`5000`), and Losses (`5100`/`5200`).
 
 ### Tab 2: Debit/Credit Journal (ဒက်ဘစ်/ခရက်ဒစ် ဂျာနယ်)

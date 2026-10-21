@@ -283,7 +283,8 @@ class _AppUpdateFooter extends StatelessWidget {
               ..showSnackBar(
                 SnackBar(
                   content: Text(
-                    state.errorMessage ?? 'Update check failed. Please try again.',
+                    state.errorMessage ??
+                        'Update check failed. Please try again.',
                   ),
                   duration: const Duration(seconds: 4),
                   behavior: SnackBarBehavior.floating,
@@ -314,9 +315,9 @@ class _AppUpdateFooter extends StatelessWidget {
             child: GestureDetector(
               onTap: isChecking
                   ? null
-                  : () => context
-                      .read<AppUpdateCubit>()
-                      .checkForUpdates(force: true),
+                  : () => context.read<AppUpdateCubit>().checkForUpdates(
+                      force: true,
+                    ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 6,

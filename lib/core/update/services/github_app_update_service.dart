@@ -32,8 +32,8 @@ class GithubAppUpdateService implements AppUpdateServiceInterface {
     http.Client? httpClient,
     UpdateStorageInterface? storage,
     this.customVersionProvider,
-  })  : _httpClient = httpClient ?? http.Client(),
-        _storage = storage ?? InMemoryUpdateStorage();
+  }) : _httpClient = httpClient ?? http.Client(),
+       _storage = storage ?? InMemoryUpdateStorage();
 
   /// Inspects and returns the currently installed app version metadata dynamically
   /// using [package_info_plus].
@@ -101,17 +101,24 @@ class GithubAppUpdateService implements AppUpdateServiceInterface {
     }
 
     try {
-      final response = await _httpClient.get(
-        config.latestReleaseUri,
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'FlutterAppUpdateService-${current.appName}',
-        },
-      ).timeout(const Duration(seconds: 15));
+      String asciiOnlyName = current.appName.replaceAll(
+        RegExp(r'[^\x00-\x7F]'),
+        '',
+      );
+      final response = await _httpClient
+          .get(
+            config.latestReleaseUri,
+            headers: {
+              'Accept': 'application/vnd.github.v3+json',
+              'User-Agent':
+                  'FlutterAppUpdateService-${asciiOnlyName.isNotEmpty ? asciiOnlyName : 'CheyNgar'}',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(response.bodyBytes))
-            as Map<String, dynamic>;
+        final data =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
         final releaseInfo = UpdateInfo.fromGitHubJson(
           data,
           apkAssetRegex: config.apkAssetRegex,
@@ -140,7 +147,8 @@ class GithubAppUpdateService implements AppUpdateServiceInterface {
       } else if (response.statusCode == 404) {
         return UpdateCheckResult.failure(
           currentVersion: current,
-          error: 'No releases found for ${config.githubOwner}/${config.githubRepo}.',
+          error:
+              'No releases found for ${config.githubOwner}/${config.githubRepo}.',
           isManual: force,
         );
       } else if (response.statusCode == 403) {
@@ -192,7 +200,8 @@ class GithubAppUpdateService implements AppUpdateServiceInterface {
 
     final currentApp = await checkCurrentApkVersion();
     final authority = '${currentApp.packageName}.ota_update_provider';
-    final filename = destinationFilename ??
+    final filename =
+        destinationFilename ??
         config.destinationFilename ??
         '${config.githubRepo}-update.apk';
 
@@ -207,107 +216,107 @@ class GithubAppUpdateService implements AppUpdateServiceInterface {
 
       OtaUpdate()
           .execute(
-        apkUrl,
-        destinationFilename: filename,
-        androidProviderAuthority: authority,
-        sha256checksum: sha256Checksum,
-      )
+            apkUrl,
+            destinationFilename: filename,
+            androidProviderAuthority: authority,
+            sha256checksum: sha256Checksum,
+          )
           .listen(
-        (OtaEvent event) {
-          switch (event.status) {
-            case OtaStatus.DOWNLOADING:
-              final percent = int.tryParse(event.value ?? '0') ?? 0;
-              controller.add(
-                AppUpdateProgress(
-                  status: OtaDownloadStatus.downloading,
-                  percentage: percent,
-                  message: 'Downloading ($percent%)...',
-                ),
-              );
-              break;
-            case OtaStatus.INSTALLING:
-              controller.add(
-                const AppUpdateProgress(
-                  status: OtaDownloadStatus.installing,
-                  percentage: 100,
-                  message: 'Launching installer...',
-                ),
-              );
-              break;
-            case OtaStatus.INSTALLATION_DONE:
-              controller.add(
-                const AppUpdateProgress(
-                  status: OtaDownloadStatus.completed,
-                  percentage: 100,
-                  message: 'Installation completed.',
-                ),
-              );
-              break;
-            case OtaStatus.ALREADY_RUNNING_ERROR:
-              controller.add(
-                const AppUpdateProgress(
-                  status: OtaDownloadStatus.alreadyRunning,
-                  message: 'Download is already in progress.',
-                ),
-              );
-              break;
-            case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
-              controller.add(
-                const AppUpdateProgress(
-                  status: OtaDownloadStatus.permissionNotGranted,
-                  message:
-                      'Permission to install unknown apps was denied. Please allow it in Android Settings.',
-                ),
-              );
-              break;
-            case OtaStatus.INTERNAL_ERROR:
+            (OtaEvent event) {
+              switch (event.status) {
+                case OtaStatus.DOWNLOADING:
+                  final percent = int.tryParse(event.value ?? '0') ?? 0;
+                  controller.add(
+                    AppUpdateProgress(
+                      status: OtaDownloadStatus.downloading,
+                      percentage: percent,
+                      message: 'Downloading ($percent%)...',
+                    ),
+                  );
+                  break;
+                case OtaStatus.INSTALLING:
+                  controller.add(
+                    const AppUpdateProgress(
+                      status: OtaDownloadStatus.installing,
+                      percentage: 100,
+                      message: 'Launching installer...',
+                    ),
+                  );
+                  break;
+                case OtaStatus.INSTALLATION_DONE:
+                  controller.add(
+                    const AppUpdateProgress(
+                      status: OtaDownloadStatus.completed,
+                      percentage: 100,
+                      message: 'Installation completed.',
+                    ),
+                  );
+                  break;
+                case OtaStatus.ALREADY_RUNNING_ERROR:
+                  controller.add(
+                    const AppUpdateProgress(
+                      status: OtaDownloadStatus.alreadyRunning,
+                      message: 'Download is already in progress.',
+                    ),
+                  );
+                  break;
+                case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
+                  controller.add(
+                    const AppUpdateProgress(
+                      status: OtaDownloadStatus.permissionNotGranted,
+                      message:
+                          'Permission to install unknown apps was denied. Please allow it in Android Settings.',
+                    ),
+                  );
+                  break;
+                case OtaStatus.INTERNAL_ERROR:
+                  controller.add(
+                    AppUpdateProgress(
+                      status: OtaDownloadStatus.internalError,
+                      message: event.value ?? 'Internal error during update.',
+                    ),
+                  );
+                  break;
+                case OtaStatus.DOWNLOAD_ERROR:
+                  controller.add(
+                    AppUpdateProgress(
+                      status: OtaDownloadStatus.downloadError,
+                      message: event.value ?? 'Failed to download APK file.',
+                    ),
+                  );
+                  break;
+                case OtaStatus.CHECKSUM_ERROR:
+                  controller.add(
+                    const AppUpdateProgress(
+                      status: OtaDownloadStatus.checksumError,
+                      message: 'File checksum verification failed.',
+                    ),
+                  );
+                  break;
+                case OtaStatus.CANCELED:
+                  controller.add(
+                    const AppUpdateProgress(
+                      status: OtaDownloadStatus.idle,
+                      message: 'Download was canceled.',
+                    ),
+                  );
+                  break;
+                default:
+                  break;
+              }
+            },
+            onError: (err) {
               controller.add(
                 AppUpdateProgress(
                   status: OtaDownloadStatus.internalError,
-                  message: event.value ?? 'Internal error during update.',
+                  message: 'Unexpected error: $err',
                 ),
               );
-              break;
-            case OtaStatus.DOWNLOAD_ERROR:
-              controller.add(
-                AppUpdateProgress(
-                  status: OtaDownloadStatus.downloadError,
-                  message: event.value ?? 'Failed to download APK file.',
-                ),
-              );
-              break;
-            case OtaStatus.CHECKSUM_ERROR:
-              controller.add(
-                const AppUpdateProgress(
-                  status: OtaDownloadStatus.checksumError,
-                  message: 'File checksum verification failed.',
-                ),
-              );
-              break;
-            case OtaStatus.CANCELED:
-              controller.add(
-                const AppUpdateProgress(
-                  status: OtaDownloadStatus.idle,
-                  message: 'Download was canceled.',
-                ),
-              );
-              break;
-            default:
-              break;
-          }
-        },
-        onError: (err) {
-          controller.add(
-            AppUpdateProgress(
-              status: OtaDownloadStatus.internalError,
-              message: 'Unexpected error: $err',
-            ),
+            },
+            onDone: () {
+              controller.close();
+            },
           );
-        },
-        onDone: () {
-          controller.close();
-        },
-      );
 
       yield* controller.stream;
     } catch (e) {
